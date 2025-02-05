@@ -10,6 +10,7 @@ import Login from './pages/Login'
 import Cart from './pages/Cart'
 import Product from './pages/Product'
 import Navbar from './compontents/Navbar'
+import Footer from './compontents/Footer'
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Route path='/cart'  element={<Cart/>} />
         <Route path='/product/:productId'  element={<Product/>} />
       </Routes>
+      <Footer/>
       
     </div>
   )
