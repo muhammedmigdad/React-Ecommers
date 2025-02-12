@@ -11,13 +11,14 @@ import Cart from './pages/Cart'
 import Product from './pages/Product'
 import Navbar from './compontents/Navbar'
 import Footer from './compontents/Footer'
+import SearchBar from './compontents/SearchBar'
 
 
 function App() {
   return (
     <div className='px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]'>
       <Navbar/>
-
+      <SearchBar/>
       <Routes>
         <Route path='/'  element={<Home/>} />
         <Route path='/collection'  element={<Collection/>} />
