@@ -18,7 +18,7 @@ function RelatedProducts({category,subCategory})  {
 
             SetRealted(productsCopy.slice(0.5));
         }
-    })
+    },[])
   return (
     <div className='my-24'>
         <div className='text-center text-3xl py-2'>
