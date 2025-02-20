@@ -9,7 +9,8 @@ const containerVariants = {
   visible: { 
     opacity: 1, 
     transition: { staggerChildren: 0.15, delayChildren: 0.3 }
-  }
+  },
+  exit: { opacity: 0, y: 50, transition: { duration: 0.5 } } // Fades out when scrolled out
 };
 
 const itemVariants = {
@@ -36,7 +37,14 @@ function LatestCollection() {
   }, [products]);
 
   return (
-    <div className="my-10">
+    <motion.div 
+      className="my-10"
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="visible"
+      exit="exit" // Exit animation when scrolled out
+      viewport={{ once: false, amount: 0.3 }} // Triggers animation when 30% is visible
+    >
       {/* Title Section */}
       <div className="text-center py-8 text-3xl">
         <Title text1={"LATEST"} text2={"COLLECTIONS"} />
@@ -45,12 +53,10 @@ function LatestCollection() {
         </p>
       </div>
 
-      {/* Products Grid with Animation */}
+      {/* Products Grid with Scroll Triggered Animation */}
       <motion.div 
         className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6"
         variants={containerVariants}
-        initial="hidden"
-        animate="visible"
       >
         {latestProducts.map((item) => (
           <motion.div 
@@ -62,7 +68,7 @@ function LatestCollection() {
           </motion.div>
         ))}
       </motion.div>
-    </div>
+    </motion.div>
   );
 }
 

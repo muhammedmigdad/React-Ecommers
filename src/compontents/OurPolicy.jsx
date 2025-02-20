@@ -1,14 +1,10 @@
-import React from 'react'
-import { assets } from '../assets/assets'
+import React from 'react';
+import { assets } from '../assets/assets';
 import { motion } from 'framer-motion';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    transition: { duration: 0.5, ease: "easeOut" }
-  }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
 };
 
 function OurPolicy() {
@@ -17,7 +13,8 @@ function OurPolicy() {
         <motion.div
           variants={itemVariants}
           initial="hidden"
-          animate="visible"
+          whileInView="visible"
+          viewport={{ once: false, amount: 0.5 }} // Ensures it disappears when scrolled out
           className="flex flex-col items-center"
         >
             <img src={assets.exchange_icon} className='w-12 m-auto mb-5' alt="" />
@@ -28,7 +25,8 @@ function OurPolicy() {
         <motion.div
           variants={itemVariants}
           initial="hidden"
-          animate="visible"
+          whileInView="visible"
+          viewport={{ once: false, amount: 0.5 }}
           className="flex flex-col items-center"
         >
             <img src={assets.quality_icon} className='w-12 m-auto mb-5' alt="" />
@@ -39,7 +37,8 @@ function OurPolicy() {
         <motion.div
           variants={itemVariants}
           initial="hidden"
-          animate="visible"
+          whileInView="visible"
+          viewport={{ once: false, amount: 0.5 }}
           className="flex flex-col items-center"
         >
             <img src={assets.support_img} className='w-12 m-auto mb-5' alt="" />
@@ -47,7 +46,7 @@ function OurPolicy() {
             <p className='text-gray-400'>We provide 24/7 customer support</p>
         </motion.div>
     </div>
-  )
+  );
 }
 
 export default OurPolicy;

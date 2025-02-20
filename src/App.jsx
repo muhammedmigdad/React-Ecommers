@@ -5,7 +5,7 @@ import Collection from './pages/Collection'
 import Contact from './pages/Contact'
 import About from './pages/About'
 import Orders from './pages/Orders'
-import Placeorder from './pages/Placeorder'
+import PlaceOrder from './pages/PlaceOrder'; 
 import Login from './pages/Login'
 import Cart from './pages/Cart'
 import Product from './pages/Product'
@@ -27,7 +27,7 @@ function App() {
         <Route path='/contact'  element={<Contact/>} />
         <Route path='/about'  element={<About/>} />
         <Route path='/orders'  element={<Orders/>} />
-        <Route path='/placeorder'  element={<Placeorder/>} />
+        <Route path='/placeorder' element={<PlaceOrder/>} />
         <Route path='/login'  element={<Login/>} />
         <Route path='/cart'  element={<Cart/>} />
         <Route path='/product/:productId'  element={<Product/>} />
