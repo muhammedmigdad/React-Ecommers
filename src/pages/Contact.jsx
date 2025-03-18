@@ -24,67 +24,63 @@ function Contact() {
         </p>
       </header>
 
-      {/* Contact Information Section */}
-      <motion.div
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-        className="bg-gray-50 p-8 rounded-lg shadow-md mb-8"
-      >
-        <h2 className="text-2xl font-semibold mb-6 text-center">Reach Out To Us</h2>
+      {/* Main content with image on left */}
+      <div className="flex flex-col md:flex-row gap-8 mb-8">
+        {/* Left side image */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="md:w-1/3 flex items-center justify-center"
+        >
+          <img 
+            src={assets.contact_img} 
+            alt="Contact Us" 
+            className="w-full rounded-lg shadow-lg" 
+          />
+        </motion.div>
+        
+        {/* Right side content */}
+        <motion.div
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="md:w-2/3 bg-gray-50 p-8 rounded-lg shadow-md"
+        >
+          <h2 className="text-2xl font-semibold mb-6 text-center">Reach Out To Us</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-          {/* Store Location */}
-          <div className="p-4 bg-white rounded-lg shadow-sm">
-            <h3 className="text-lg font-medium mb-2">📍 Store Location</h3>
-            <p className="text-gray-700">
-              123 Fashion Street<br />
-              New York, NY 10001<br />
-              United States
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+            {/* Store Location */}
+            <div className="p-4 bg-white rounded-lg shadow-sm">
+              <h3 className="text-lg font-medium mb-2">📍 Store Location</h3>
+              <p className="text-gray-700">
+                123 Fashion Street<br />
+                New York, NY 10001<br />
+                United States
+              </p>
+            </div>
+
+            {/* Opening Hours */}
+            <div className="p-4 bg-white rounded-lg shadow-sm">
+              <h3 className="text-lg font-medium mb-2">⏰ Opening Hours</h3>
+              <p className="text-gray-700">
+                Mon - Fri: 9 AM - 8 PM<br />
+                Sat: 10 AM - 6 PM<br />
+                Sun: 12 PM - 5 PM
+              </p>
+            </div>
+
+            {/* Contact Details */}
+            <div className="p-4 bg-white rounded-lg shadow-sm">
+              <h3 className="text-lg font-medium mb-2">📞 Contact Info</h3>
+              <p className="text-gray-700">
+                Phone: (555) 123-4567<br />
+                Email: support@fashionstore.com
+              </p>
+            </div>
           </div>
-
-          {/* Opening Hours */}
-          <div className="p-4 bg-white rounded-lg shadow-sm">
-            <h3 className="text-lg font-medium mb-2">⏰ Opening Hours</h3>
-            <p className="text-gray-700">
-              Mon - Fri: 9 AM - 8 PM<br />
-              Sat: 10 AM - 6 PM<br />
-              Sun: 12 PM - 5 PM
-            </p>
-          </div>
-
-          {/* Contact Details */}
-          <div className="p-4 bg-white rounded-lg shadow-sm">
-            <h3 className="text-lg font-medium mb-2">📞 Contact Info</h3>
-            <p className="text-gray-700">
-              Phone: (555) 123-4567<br />
-              Email: support@fashionstore.com
-            </p>
-          </div>
-        </div>
-
-        {/* Social Media Icons */}
-        <div className="text-center mt-6">
-          <h3 className="text-lg font-medium mb-3">Follow Us</h3>
-          <div className="flex justify-center space-x-6">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-              <img src={assets.facebook} alt="Facebook" className="w-10 h-10 transition-transform duration-200 hover:scale-110" />
-            </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-              <img src={assets.instagram} alt="Instagram" className="w-10 h-10 transition-transform duration-200 hover:scale-110" />
-            </a>
-            <a href="https://x.com" target="_blank" rel="noopener noreferrer">
-              <img src={assets.x} alt="x" className="w-10 h-10 transition-transform duration-200 hover:scale-110" />
-            </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-              <img src={assets.linkedin} alt="LinkedIn" className="w-10 h-10 transition-transform duration-200 hover:scale-110" />
-            </a>
-          </div>
-        </div>
-
-
-      </motion.div>
+        </motion.div>
+      </div>
 
       {/* Google Map Section */}
       <motion.div

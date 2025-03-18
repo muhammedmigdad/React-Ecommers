@@ -12,5 +12,5 @@ export const loginAccount = async (body) => {
 
 export const registerAccount = async (body) => {
     const { data } = await axios.post(REGISTER_ENDPOINT, body)
-    return data
+    return data
 }

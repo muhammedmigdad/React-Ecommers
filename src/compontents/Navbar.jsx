@@ -1,10 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { assets } from "../assets/assets.js";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext.jsx";
 
 const Navbar = () => {
-  const [visible, setVisible] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { setShowSearch, getCartCount } = useContext(ShopContext);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -30,41 +31,72 @@ const Navbar = () => {
         setDropdownVisible(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
+  // Animation variants for mobile menu
+  const menuVariants = {
+    closed: {
+      x: "100%",
+      opacity: 0,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+        duration: 0.3,
+      },
+    },
+    open: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+        duration: 0.3,
+      },
+    },
+  };
+
+  // Animation variants for menu items
+  const itemVariants = {
+    closed: { opacity: 0, x: 20 },
+    open: { 
+      opacity: 1, 
+      x: 0,
+      transition: {
+        duration: 0.2,
+      },
+    },
+  };
+
   return (
-    <div className="flex justify-between items-center py-5 font-medium">
+    <div className="flex justify-between items-center py-5 font-medium relative">
+      {/* Logo */}
       <Link to="/">
         <img src={assets.logo} alt="Logo" className="w-36" />
       </Link>
 
-      {/* Navigation Links */}
+      {/* Navigation Links (Hidden on Mobile) */}
       <ul className="hidden sm:flex gap-5 text-sm text-gray-700">
-        <NavLink to="/" className="flex flex-col items-center gap-1">
-          <p>HOME</p>
-          <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 hidden" />
-        </NavLink>
-        <NavLink to="/collection" className="flex flex-col items-center gap-1">
-          <p>COLLECTION</p>
-          <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 hidden" />
-        </NavLink>
-        <NavLink to="/about" className="flex flex-col items-center gap-1">
-          <p>ABOUT</p>
-          <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 hidden" />
-        </NavLink>
-        <NavLink to="/contact" className="flex flex-col items-center gap-1">
-          <p>CONTACT</p>
-          <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 hidden" />
-        </NavLink>
+        {[ "Collection", "About", "Contact"].map((item) => (
+          <NavLink
+            key={item}
+            to={`/${item.toLowerCase()}`}
+            className="flex flex-col items-center gap-1"
+          >
+            <p>{item.toUpperCase()}</p>
+            <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 hidden" />
+          </NavLink>
+        ))}
       </ul>
 
       {/* Right Side Icons */}
       <div className="flex items-center gap-6">
+        {/* Search Icon */}
         <img
           onClick={() => setShowSearch(true)}
           src={assets.search_icon}
@@ -105,7 +137,7 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Cart */}
+        {/* Cart Icon */}
         <Link to="/cart" className="relative">
           <img src={assets.cart_icon} className="w-5 min-w-5" alt="Cart" />
           <p className="absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
@@ -113,65 +145,78 @@ const Navbar = () => {
           </p>
         </Link>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu Icon */}
         <img
-          onClick={() => setVisible(true)}
+          onClick={() => setMobileMenuOpen(true)}
           src={assets.menu_icon}
           className="w-5 cursor-pointer sm:hidden"
           alt="Menu"
         />
       </div>
 
-      {/* Sidebar Menu for Mobile */}
-      <div
-        className={`absolute top-0 right-0 bottom-0 bg-white transition-all duration-300 ${
-          visible ? "w-full" : "w-0"
-        }`}
-      >
-        <div className="flex flex-col text-gray-600">
-          <div
-            onClick={() => setVisible(false)}
-            className="flex items-center gap-4 p-3 cursor-pointer"
+      {/* Animated Sidebar Mobile Menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            className="fixed top-0 right-0 h-full bg-white shadow-lg z-50 w-64 sm:hidden"
+            variants={menuVariants}
+            initial="closed"
+            animate="open"
+            exit="closed"
           >
-            <img
-              src={assets.dropdown_icon}
-              className="h-4 rotate-180"
-              alt="Close menu"
-            />
-            <p className="text-sm">Back</p>
-          </div>
+            {/* Close Button */}
+            <motion.div
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-4 p-4 cursor-pointer"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <img
+                src={assets.dropdown_icon}
+                className="h-4 rotate-180"
+                alt="Close menu"
+              />
+              <p className="text-sm">Close</p>
+            </motion.div>
 
-          {/* Mobile Navigation Links */}
-          <NavLink
-            onClick={() => setVisible(false)}
-            className="py-3 pl-6 border-b hover:bg-gray-100 transition-colors duration-200"
-            to="/"
-          >
-            HOME
-          </NavLink>
-          <NavLink
-            onClick={() => setVisible(false)}
-            className="py-3 pl-6 border-b hover:bg-gray-100 transition-colors duration-200"
-            to="/collection"
-          >
-            COLLECTION
-          </NavLink>
-          <NavLink
-            onClick={() => setVisible(false)}
-            className="py-3 pl-6 border-b hover:bg-gray-100 transition-colors duration-200"
-            to="/about"
-          >
-            ABOUT
-          </NavLink>
-          <NavLink
-            onClick={() => setVisible(false)}
-            className="py-3 pl-6 border-b hover:bg-gray-100 transition-colors duration-200"
-            to="/contact"
-          >
-            CONTACT
-          </NavLink>
-        </div>
-      </div>
+            {/* Mobile Navigation Links */}
+            <motion.ul
+              className="flex flex-col text-gray-600"
+              initial="closed"
+              animate="open"
+              variants={{
+                open: {
+                  transition: {
+                    staggerChildren: 0.1,
+                    delayChildren: 0.2,
+                  },
+                },
+                closed: {
+                  transition: {
+                    staggerChildren: 0.05,
+                    staggerDirection: -1,
+                  },
+                },
+              }}
+            >
+                    <Link to="/">
+        <img src={assets.logo} alt="Logo" className="w-36" />
+      </Link>
+              {[ "Collection", "About", "Contact"].map((item) => (
+                <motion.li key={item} variants={itemVariants}>
+                  <NavLink
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="py-3 pl-6 border-b hover:bg-gray-100 block transition-colors duration-200"
+                    to={`/${item.toLowerCase()}`}
+                  >
+                    {item.toUpperCase()}
+                  </NavLink>
+                </motion.li>
+              ))}
+            </motion.ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

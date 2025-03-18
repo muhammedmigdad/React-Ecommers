@@ -1,102 +1,84 @@
-import { createContext, useEffect, useState } from "react"
-import { products } from "../assets/assets";
+import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
+import { fetchProducts } from "../compontents/data/index.js"; // Ensure correct path
 
 export const ShopContext = createContext();
-const ShopContextProvider = (props) => {
 
+const ShopContextProvider = ({ children }) => {
     const currency = '$';
     const delivery_fee = 10;
-    const [search,setSearch] = useState('');
-    const [showSearch, setShowSearch] = useState(false)
-    const [cartItems, setCartItems] = useState([]);
+    const [search, setSearch] = useState('');
+    const [showSearch, setShowSearch] = useState(false);
+    const [cartItems, setCartItems] = useState({});
+    const [products, setProducts] = useState([]); 
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const loadProducts = async () => {
+            try {
+                const data = await fetchProducts(); 
+                setProducts(data);
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        };
 
-    const addToCart = async (itemId,size) => {
+        loadProducts(); // ✅ Fetch products only once on mount
+    }, []); // ✅ Removed `products` from dependency array
 
-        if (!size){
-            toast.error('select product size');
+    const addToCart = (itemId, size) => {
+        if (!size) {
+            toast.error('Select product size');
             return;
         }
 
-        let cartData = structuredClone(cartItems);
+        setCartItems((prevCart) => {
+            const newCart = { ...prevCart };
+            if (!newCart[itemId]) newCart[itemId] = {};
+            newCart[itemId][size] = (newCart[itemId][size] || 0) + 1;
+            return newCart;
+        });
+    };
 
-        if (cartData[itemId]){
-            if (cartData[itemId][size]){
-                cartData[itemId][size] += 1;
-            }
-            else{
-                cartData[itemId][size] = 1;
-            }
-            
-        }
-        else{
-            cartData[itemId] = {};
-            cartData[itemId][size] = 1;
-        }
+    const getCartAmount = () => {
+        return Object.keys(cartItems).reduce((total, itemId) => {
+            const itemInfo = products.find((p) => p._id === itemId); // ✅ Ensure consistency with `_id`
+            if (!itemInfo) return total;
 
-        setCartItems(cartData);
-
-    }
-
-    const getCartAmount =  ()  => {
-        let totelAmount = 0;
-        for (const items in cartItems){
-            let itemInfo = products.find((products)=> products._id === items);
-            for (const item in cartItems[items]){
-                try {
-                    if (cartItems[items][item] > 0){
-                        totelAmount += itemInfo.price * cartItems[items][item];
-                    }
-                } catch (error) {
-
-                }
-            }
-        }
-        return totelAmount;
-        
-    }
-
+            return total + Object.entries(cartItems[itemId]).reduce(
+                (sum, [size, qty]) => sum + (itemInfo.sale_price || itemInfo.regular_price) * qty,
+                0
+            );
+        }, 0);
+    };
 
     const getCartCount = () => {
-        let totelCount = 0;
-        for (const items in cartItems){
-            for (const item in cartItems[items]){
-              try {
-                if (cartItems[items][item] > 0){
-                    totelCount += cartItems[items][item];
-                }
-              } catch (error) {
+        return Object.values(cartItems).reduce(
+            (total, sizes) => total + Object.values(sizes).reduce((sum, qty) => sum + qty, 0),
+            0
+        );
+    };
 
-              }
+    const updateQuantity = (itemId, size, quantity) => {
+        setCartItems((prevCart) => {
+            const newCart = { ...prevCart };
+            if (newCart[itemId]) {
+                newCart[itemId][size] = quantity;
             }
-        }
-        return totelCount;
-    }
-
-    const updateQuantity = async (itemId,size,quantity) => {
-        let cartData = structuredClone(cartItems);
-        cartData[itemId][size] = quantity;
-
-        setCartItems(cartData);
-    }
-
-    const value = {
-        products , currency , delivery_fee,
-        search,setSearch,showSearch,setShowSearch,
-        cartItems,addToCart,
-        getCartCount,updateQuantity,
-        getCartAmount, navigate,
-    }
+            return newCart;
+        });
+    };
 
     return (
-        <ShopContext.Provider value={value}>
-            {props.children}
+        <ShopContext.Provider value={{ 
+            products, setProducts, currency, delivery_fee, search, setSearch, 
+            showSearch, setShowSearch, cartItems, addToCart, getCartCount, 
+            updateQuantity, getCartAmount, navigate 
+        }}>
+            {children}
         </ShopContext.Provider>
-    )
-
-}
+    );
+};
 
 export default ShopContextProvider;
