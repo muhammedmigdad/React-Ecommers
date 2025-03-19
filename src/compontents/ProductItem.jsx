@@ -5,15 +5,16 @@ import { Link } from 'react-router-dom';
 function ProductItem({ id, name, image, price }) {
     const { currency } = useContext(ShopContext);
 
-    // Provide a fallback image if `image` is null or empty
-    const productImage = Array.isArray(image) && image.length > 0 ? image[0] : "/fallback-image.jpg"; 
+
+    // Handle image: expect a string (from backend's mainimage), fallback if invalid
+    const productImage = image && typeof image === 'string' ? image : '/fallback-image.jpg';
 
     return (
         <Link className="text-gray-700 cursor-pointer" to={`/product/${id}`}>
             {/* Image container */}
             <div className="overflow-hidden">
                 <img
-                    className="w-full hover:scale-110 transition-transform duration-300 ease-in-out"
+                    className="w-full hover:scale-110 rounded-lg transition-transform duration-300 ease-in-out"
                     src={productImage}
                     alt={name || "Product Image"} 
                 />
@@ -21,7 +22,7 @@ function ProductItem({ id, name, image, price }) {
 
             {/* Product details */}
             <p className="pt-3 pb-1 text-sm">{name || "No Name Available"}</p>
-            <p className="text-sm font-medium">
+            <p className=" text-black text-xl font-medium">
                 {currency}
                 {price || "N/A"}
             </p>

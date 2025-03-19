@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { ShopContext } from "../context/ShopContext";
 import Title from "./Title";
 import ProductItem from "./ProductItem";
-
 const containerVariants = {
     hidden: { opacity: 0 },
     visible: {

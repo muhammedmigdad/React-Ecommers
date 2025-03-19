@@ -122,7 +122,7 @@ function Collection() {
       <div className="p-3 md:p-6">
         <Title text1="OUR" text2="COLLECTIONS" className="text-center mb-4 md:mb-6" />
         {loading ? (
-          <p className="text-center text-gray-600 py-10 text-sm md:text-base">Loading products...</p>
+          <p className="text-center text-blue-700 py-10 text-lg md:text-xl">Loading products...</p>
         ) : error ? (
           <p className="text-center text-red-600 py-10 text-sm md:text-base">{error}</p>
         ) : (
@@ -131,7 +131,7 @@ function Collection() {
               products.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                  className="bg-white rounded-lg shadow-md px-4 py-3  overflow-hidden hover:shadow-xl transition-shadow duration-300"
                 >
                   <ProductItem
                     name={item.name}

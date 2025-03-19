@@ -199,9 +199,6 @@ const Navbar = () => {
                 },
               }}
             >
-                    <Link to="/">
-        <img src={assets.logo} alt="Logo" className="w-36" />
-      </Link>
               {[ "Collection", "About", "Contact"].map((item) => (
                 <motion.li key={item} variants={itemVariants}>
                   <NavLink
