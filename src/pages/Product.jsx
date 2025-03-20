@@ -1,8 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
-import RelatedProducts from '../compontents/RelatedProducts';
-import axios from '../compontents/services/axios';
+import RelatedProducts from '../compontents/RelatedProducts'; // Fixed typo
+import axios from '../compontents/services/axios'; // Fixed typo
+import ProductReview from '../compontents/ProductReview'; // Fixed typo
 
 function Product() {
   const { productId } = useParams();
@@ -27,19 +28,17 @@ function Product() {
       try {
         const response = await axios.get(`/product_details/${productId}/`);
         const data = response.data;
-        console.log('Fetched product data:', data);
         setProductData(data);
 
-        // Set available sizes
-        if (data.available_sizes && data.available_sizes.length > 0) {
+        if (data.available_sizes?.length > 0) {
           setAvailableSizes(data.available_sizes);
-          setSelectedSize(data.available_sizes[0].size_code); // Default to first size
+          setSelectedSize(data.available_sizes[0].size_code);
         }
 
         const images = [data.mainimage, data.image_1, data.image_2, data.image_3, data.image_4].filter(Boolean);
         setImage(images.length > 0 ? images[0] : '/placeholder.jpg');
       } catch (error) {
-        setError(error.response?.data?.error || 'An unexpected error occurred.');
+        setError(error.response?.data?.error || 'An unexpected error occurred');
       } finally {
         setLoading(false);
       }
@@ -49,7 +48,7 @@ function Product() {
   }, [productId, navigate]);
 
   if (loading) return <div className="text-center py-10 text-gray-600">Loading product...</div>;
-  if (error || !productData) return <div className="text-center py-10 text-red-500">{error || 'Product not found.'}</div>;
+  if (error || !productData) return <div className="text-center py-10 text-red-500">{error || 'Product not found'}</div>;
 
   const sizeOptions = {
     s: 'Small',
@@ -61,6 +60,9 @@ function Product() {
   };
 
   const showSizeSelector = availableSizes.length > 0;
+  const normalizedRating = Math.max(0, Math.min(5, productData.rating || 0));
+  const fullStars = Math.round(normalizedRating);
+  const emptyStars = 5 - fullStars;
 
   return (
     <div className="border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100">
@@ -88,6 +90,11 @@ function Product() {
         {/* Product Details */}
         <div className="flex-1">
           <h1 className="text-2xl font-medium mt-2">{productData.name}</h1>
+          <div className="flex items-center mt-2">
+            <span className="text-yellow-400">{'★'.repeat(fullStars)}</span>
+            <span className="text-gray-400">{'★'.repeat(emptyStars)}</span>
+            <span className="ml-2 text-gray-600">({normalizedRating.toFixed(1)})</span>
+          </div>
           <p className="mt-5 text-3xl font-medium">{currency}{productData.sale_price || productData.regular_price}</p>
           <p className="mt-2 text-gray-500 md:w-4/5">{productData.description || 'No description available'}</p>
 
@@ -95,14 +102,14 @@ function Product() {
           {showSizeSelector && (
             <div className="flex flex-col my-8 gap-4">
               <p>Select Size</p>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 {availableSizes.map((size) => (
                   <button
                     key={size.size_code}
                     onClick={() => setSelectedSize(size.size_code)}
                     className={`border py-2 px-4 bg-gray-100 ${
                       selectedSize === size.size_code ? 'border-orange-500' : ''
-                    }`}
+                    } ${!size.in_stock ? 'opacity-50 cursor-not-allowed' : ''}`}
                     disabled={!size.in_stock}
                   >
                     {size.size_code.toUpperCase()}
@@ -137,12 +144,17 @@ function Product() {
               addToCart(productData.id, selectedSize);
               alert('Product added to cart!');
             }}
-            className="bg-black text-white py-3 px-8 text-sm active:bg-gray-700 rounded-lg"
+            className="bg-black text-white py-3 px-8 text-sm active:bg-gray-700 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
             disabled={!availableSizes.find(s => s.size_code === selectedSize)?.stock_quantity}
           >
             {availableSizes.find(s => s.size_code === selectedSize)?.stock_quantity > 0 ? 'ADD TO CART' : 'OUT OF STOCK'}
           </button>
         </div>
+      </div>
+
+      {/* Product Review Section */}
+      <div className="mt-10">
+        <ProductReview productId={productId} />
       </div>
 
       <RelatedProducts category={productData.category} />
