@@ -32,13 +32,15 @@ const cardVariants = {
   tap: { scale: 0.95 },
 };
 
-// Color palette for styling
+// Updated color palette
 const colors = {
-  background: "#f7fafc",
-  card: "#ffffff",
+  background: "linear-gradient(135deg, #e2e8f0, #cbd5e0)", // Gradient background
+  card: "#ffffff",                                        // Solid white cards
+  filterBg: "linear-gradient(45deg, #4a5568, #718096)",   // Metallic gradient for filter
   text: "#1a202c",
   accent: "#3182ce",
   hover: "#ed8936",
+  metallic: "#a0aec0",                                    // Metallic accent
 };
 
 function Collection() {
@@ -50,7 +52,7 @@ function Collection() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { scrollY } = useViewportScroll();
-  const parallaxY = useTransform(scrollY, [0, 300], [0, -20]); // Subtle parallax for header
+  const parallaxY = useTransform(scrollY, [0, 300], [0, -20]);
 
   const toggleCategory = (e) => {
     const value = e.target.value;
@@ -77,10 +79,7 @@ function Collection() {
         if (subcategory.length > 0) params.subcategory = subcategory.join(",");
         if (sortType && sortType !== "relevant") params.sort = sortType;
 
-        console.log("Fetching products with params:", params);
         const response = await axios.get("/product_view/", { params });
-        console.log("API response:", response.data);
-
         if (!Array.isArray(response.data)) {
           throw new Error("Invalid response format: Expected an array");
         }
@@ -104,13 +103,19 @@ function Collection() {
 
   return (
     <div
-      className="min-h-screen pt-4 md:pt-6"
-      style={{ backgroundColor: colors.background }}
+      className="min-h-screen pt-4 rounded-xl md:pt-6 relative"
+      style={{ background: colors.background }}
     >
-      {/* Sticky Filter Header with Parallax */}
+      {/* Filter Header - Metallic Style */}
       <motion.div
-        className="bg-white shadow-lg p-3 md:p-4 mx-2 md:mx-4 rounded-lg sticky top-0 z-10"
-        style={{ y: parallaxY, transformPerspective: 1000 }}
+        className="p-3 md:p-4 mx-2 md:mx-4 rounded-lg sticky top-0 z-20"
+        style={{ 
+          background: colors.filterBg,
+          border: `1px solid ${colors.metallic}`,
+          boxShadow: "inset 0 2px 4px rgba(255, 255, 255, 0.1), 0 4px 15px rgba(0, 0, 0, 0.2)",
+          y: parallaxY,
+          transformPerspective: 1000,
+        }}
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
@@ -120,8 +125,12 @@ function Collection() {
             <select
               onChange={(e) => setSortType(e.target.value)}
               value={sortType}
-              className="w-full p-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-              style={{ backgroundColor: colors.card, color: colors.text }}
+              className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+              style={{ 
+                background: "linear-gradient(45deg, #718096, #a0aec0)",
+                color: colors.text,
+                borderColor: colors.metallic,
+              }}
             >
               <option value="relevant">Sort by: Relevant</option>
               <option value="low-high">Price: Low to High</option>
@@ -145,12 +154,13 @@ function Collection() {
                       value={cat}
                       checked={category.includes(cat)}
                       onChange={toggleCategory}
-                      className="w-4 h-4 accent-blue-600 rounded"
+                      className="w-4 h-4 rounded"
+                      style={{ accentColor: colors.accent }}
                       whileHover={{ scale: 1.2 }}
                       transition={{ duration: 0.2 }}
                     />
                     <span
-                      className="group-hover:text-blue-600 transition-colors duration-200"
+                      className="group-hover:text-orange-500 transition-colors duration-200"
                       style={{ color: colors.text }}
                     >
                       {cat}
@@ -175,12 +185,13 @@ function Collection() {
                       value={sub}
                       checked={subcategory.includes(sub)}
                       onChange={toggleSubCategory}
-                      className="w-4 h-4 accent-blue-600 rounded"
+                      className="w-4 h-4 rounded"
+                      style={{ accentColor: colors.accent }}
                       whileHover={{ scale: 1.2 }}
                       transition={{ duration: 0.2 }}
                     />
                     <span
-                      className="group-hover:text-blue-600 transition-colors duration-200"
+                      className="group-hover:text-orange-500 transition-colors duration-200"
                       style={{ color: colors.text }}
                     >
                       {sub}
@@ -193,31 +204,45 @@ function Collection() {
         </div>
       </motion.div>
 
-      {/* Main Content */}
-      <div className="p-3 md:p-6">
+      {/* Main Content - Gradient Style */}
+      <div className="p-3 md:p-6 relative z-10">
         <Title
           text1="OUR"
           text2="COLLECTIONS"
           className="text-center mb-4 md:mb-6 text-3xl md:text-4xl"
-          style={{ color: colors.text }}
+          style={{ 
+            color: colors.text,
+            background: "linear-gradient(90deg, #edf2f7, #e2e8f0)",
+            padding: "0.5rem 2rem",
+            borderRadius: "8px",
+            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+          }}
         />
         {loading ? (
           <motion.p
-            className="text-center py-10 text-lg md:text-xl"
+            className="text-center py-10 text-lg md:text-xl rounded-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            style={{ color: colors.accent }}
+            style={{ 
+              color: colors.accent,
+              background: "linear-gradient(90deg, #edf2f7, #e2e8f0)",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+            }}
           >
             Loading products...
           </motion.p>
         ) : error ? (
           <motion.p
-            className="text-center py-10 text-sm md:text-base"
+            className="text-center py-10 text-sm md:text-base rounded-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            style={{ color: "#e53e3e" }}
+            style={{ 
+              color: "#e53e3e",
+              background: "linear-gradient(90deg, #edf2f7, #e2e8f0)",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+            }}
           >
             {error}
           </motion.p>
@@ -233,13 +258,15 @@ function Collection() {
               products.map((item) => (
                 <motion.div
                   key={item.id}
-                  className="bg-white rounded-lg shadow-md p-4 overflow-hidden"
+                  className="rounded-lg shadow-md p-4 overflow-hidden"
                   variants={cardVariants}
                   whileHover="hover"
                   whileTap="tap"
                   style={{
-                    transformPerspective: 1000, // Enables 3D effect
-                    backgroundColor: colors.card,
+                    transformPerspective: 1000,
+                    background: colors.card,
+                    border: `1px solid ${colors.accent}20`,
+                    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.1)",
                   }}
                 >
                   <ProductItem
@@ -253,11 +280,15 @@ function Collection() {
               ))
             ) : (
               <motion.p
-                className="col-span-full text-center py-10 text-sm md:text-base"
+                className="col-span-full text-center py-10 text-sm md:text-base rounded-lg"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                style={{ color: colors.text }}
+                style={{ 
+                  color: colors.text,
+                  background: "linear-gradient(90deg, #edf2f7, #e2e8f0)",
+                  boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+                }}
               >
                 No products match your selection.
               </motion.p>

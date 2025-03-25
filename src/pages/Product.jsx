@@ -1,9 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
-import RelatedProducts from '../compontents/RelatedProducts'; // Fixed typo
-import axios from '../compontents/services/axios'; // Fixed typo
-import ProductReview from '../compontents/ProductReview'; // Fixed typo
+import RelatedProducts from '../compontents/RelatedProducts';
+import axios from '../compontents/services/axios';
+import ProductReview from '../compontents/ProductReview';
 
 function Product() {
   const { productId } = useParams();
@@ -60,7 +60,7 @@ function Product() {
   };
 
   const showSizeSelector = availableSizes.length > 0;
-  const normalizedRating = Math.max(0, Math.min(5, productData.rating || 0));
+  const normalizedRating = Math.max(0, Math.min(5, productData.average_rating || 0));
   const fullStars = Math.round(normalizedRating);
   const emptyStars = 5 - fullStars;
 

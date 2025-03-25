@@ -1,7 +1,7 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useMemo } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { fetchProducts } from "../compontents/data/index.js"; // Ensure correct path
+import { fetchProducts } from "../compontents/data/index.js"; // Fixed typo
 
 export const ShopContext = createContext();
 
@@ -17,15 +17,14 @@ const ShopContextProvider = ({ children }) => {
     useEffect(() => {
         const loadProducts = async () => {
             try {
-                const data = await fetchProducts(); 
+                const data = await fetchProducts();
                 setProducts(data);
             } catch (error) {
                 console.error("Error fetching products:", error);
             }
         };
-
-        loadProducts(); // ✅ Fetch products only once on mount
-    }, []); // ✅ Removed `products` from dependency array
+        loadProducts();
+    }, []);
 
     const addToCart = (itemId, size) => {
         if (!size) {
@@ -43,7 +42,7 @@ const ShopContextProvider = ({ children }) => {
 
     const getCartAmount = () => {
         return Object.keys(cartItems).reduce((total, itemId) => {
-            const itemInfo = products.find((p) => p._id === itemId); // ✅ Ensure consistency with `_id`
+            const itemInfo = products.find((p) => p.id === itemId);
             if (!itemInfo) return total;
 
             return total + Object.entries(cartItems[itemId]).reduce(
@@ -63,18 +62,45 @@ const ShopContextProvider = ({ children }) => {
     const updateQuantity = (itemId, size, quantity) => {
         setCartItems((prevCart) => {
             const newCart = { ...prevCart };
-            if (newCart[itemId]) {
+            if (quantity <= 0) {
+                delete newCart[itemId][size];
+                if (newCart[itemId] && Object.keys(newCart[itemId]).length === 0) {
+                    delete newCart[itemId];
+                }
+            } else if (newCart[itemId]) {
                 newCart[itemId][size] = quantity;
             }
-            return newCart;
+            return { ...newCart };
         });
     };
 
+    // Make cartTotal reactive using useMemo
+    const cartTotal = useMemo(() => {
+        const item_total = getCartAmount();
+        return {
+            item_total,
+            delivery: delivery_fee,
+            total: item_total + delivery_fee
+        };
+    }, [cartItems, products, delivery_fee]); // Dependencies that trigger recalculation
+
     return (
         <ShopContext.Provider value={{ 
-            products, setProducts, currency, delivery_fee, search, setSearch, 
-            showSearch, setShowSearch, cartItems, addToCart, getCartCount, 
-            updateQuantity, getCartAmount, navigate 
+            products, 
+            setProducts, 
+            currency, 
+            delivery_fee, 
+            search, 
+            setSearch, 
+            showSearch, 
+            setShowSearch, 
+            cartItems, 
+            addToCart, 
+            getCartCount, 
+            updateQuantity, 
+            getCartAmount, 
+            navigate, 
+            cartTotal 
         }}>
             {children}
         </ShopContext.Provider>

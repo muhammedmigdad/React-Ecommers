@@ -11,20 +11,17 @@ const Navbar = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const navigate = useNavigate();
 
-  // Check authentication on component mount
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     setIsAuthenticated(!!token);
   }, []);
 
-  // Handle logout
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     setIsAuthenticated(false);
     navigate("/login");
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!event.target.closest(".dropdown-container")) {
@@ -37,52 +34,24 @@ const Navbar = () => {
     };
   }, []);
 
-  // Animation variants for mobile menu
   const menuVariants = {
-    closed: {
-      x: "100%",
-      opacity: 0,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
-        duration: 0.3,
-      },
-    },
-    open: {
-      x: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
-        duration: 0.3,
-      },
-    },
+    closed: { x: "100%", opacity: 0 },
+    open: { x: 0, opacity: 1 }
   };
 
-  // Animation variants for menu items
   const itemVariants = {
     closed: { opacity: 0, x: 20 },
-    open: { 
-      opacity: 1, 
-      x: 0,
-      transition: {
-        duration: 0.2,
-      },
-    },
+    open: { opacity: 1, x: 0 }
   };
 
   return (
     <div className="flex justify-between items-center py-5 font-medium relative">
-      {/* Logo */}
       <Link to="/">
         <img src={assets.logo} alt="Logo" className="w-36" />
       </Link>
 
-      {/* Navigation Links (Hidden on Mobile) */}
       <ul className="hidden sm:flex gap-5 text-sm text-gray-700">
-        {[ "Collection", "About", "Contact"].map((item) => (
+        {["Collection", "About", "Contact"].map((item) => (
           <NavLink
             key={item}
             to={`/${item.toLowerCase()}`}
@@ -94,9 +63,7 @@ const Navbar = () => {
         ))}
       </ul>
 
-      {/* Right Side Icons */}
       <div className="flex items-center gap-6">
-        {/* Search Icon */}
         <img
           onClick={() => setShowSearch(true)}
           src={assets.search_icon}
@@ -104,7 +71,6 @@ const Navbar = () => {
           alt="Search"
         />
 
-        {/* Profile Dropdown */}
         <div className="relative z-50 dropdown-container">
           <img
             src={assets.profile_icon}
@@ -137,7 +103,6 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Cart Icon */}
         <Link to="/cart" className="relative">
           <img src={assets.cart_icon} className="w-5 min-w-5" alt="Cart" />
           <p className="absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
@@ -145,7 +110,6 @@ const Navbar = () => {
           </p>
         </Link>
 
-        {/* Mobile Menu Icon */}
         <img
           onClick={() => setMobileMenuOpen(true)}
           src={assets.menu_icon}
@@ -154,7 +118,6 @@ const Navbar = () => {
         />
       </div>
 
-      {/* Animated Sidebar Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
@@ -164,12 +127,9 @@ const Navbar = () => {
             animate="open"
             exit="closed"
           >
-            {/* Close Button */}
             <motion.div
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-4 p-4 cursor-pointer"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
               <img
                 src={assets.dropdown_icon}
@@ -179,31 +139,16 @@ const Navbar = () => {
               <p className="text-sm">Close</p>
             </motion.div>
 
-            {/* Mobile Navigation Links */}
             <motion.ul
               className="flex flex-col text-gray-600"
               initial="closed"
               animate="open"
-              variants={{
-                open: {
-                  transition: {
-                    staggerChildren: 0.1,
-                    delayChildren: 0.2,
-                  },
-                },
-                closed: {
-                  transition: {
-                    staggerChildren: 0.05,
-                    staggerDirection: -1,
-                  },
-                },
-              }}
             >
-              {[ "Collection", "About", "Contact"].map((item) => (
+              {["Collection", "About", "Contact"].map((item) => (
                 <motion.li key={item} variants={itemVariants}>
                   <NavLink
                     onClick={() => setMobileMenuOpen(false)}
-                    className="py-3 pl-6 border-b hover:bg-gray-100 block transition-colors duration-200"
+                    className="py-3 pl-6 border-b hover:bg-gray-100 block"
                     to={`/${item.toLowerCase()}`}
                   >
                     {item.toUpperCase()}

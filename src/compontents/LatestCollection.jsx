@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ShopContext } from "../context/ShopContext";
 import Title from "./Title";
 import ProductItem from "./ProductItem";
+
 const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -28,12 +29,14 @@ const itemVariants = {
 };
 
 function LatestCollection() {
-    const { products } = useContext(ShopContext); // ✅ Now using context state
+    const { products } = useContext(ShopContext);
     const [latestProducts, setLatestProducts] = useState([]);
 
     useEffect(() => {
-        setLatestProducts(products.slice(0, 10));
-    }, [products]); // ✅ Update when products change
+        if (products && products.length > 0) {
+            setLatestProducts(products.slice(0, 10));
+        }
+    }, [products]);
 
     return (
         <motion.div
@@ -42,7 +45,7 @@ function LatestCollection() {
             initial="hidden"
             whileInView="visible"
             exit="exit"
-            viewport={{ once: false, amount: 0.3 }} // ✅ Triggers when 30% is visible
+            viewport={{ once: false, amount: 0.3 }}
         >
             {/* Title Section */}
             <div className="text-center py-8 text-3xl">
@@ -58,16 +61,17 @@ function LatestCollection() {
                     className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6"
                     variants={containerVariants}
                 >
-                    {latestProducts.map((item) => (
-                        <motion.div key={item.id} variants={itemVariants} whileHover="hover">
-                            <ProductItem 
-                                id={item.id} 
-                                mainimage={item.mainimage} 
-                                name={item.name} 
-                                price={item.sale_price || item.regular_price} 
-                            />
-                        </motion.div>
-                    ))}
+                {latestProducts.map((item) => (
+                    <motion.div key={item.id} variants={itemVariants} whileHover="hover">
+                        <ProductItem
+                        name={item.name}
+                        id={item.id}
+                        price={item.sale_price || item.regular_price}
+                        image={item.mainimage}  // Make sure this matches the exact key in your data
+                        className="w-full"
+                        />
+                    </motion.div>
+                ))}
                 </motion.div>
             ) : (
                 <p className="text-center text-gray-500">Loading latest collections...</p>
