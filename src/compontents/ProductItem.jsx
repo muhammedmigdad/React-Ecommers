@@ -21,8 +21,8 @@ function ProductItem({ id, name, image, price }) {
             </div>
 
             {/* Product details */}
-            <p className="pt-3 text-black pb-1 text-xl">{name || "No Name Available"}</p>
-            <p className=" text-gray-500 text-xl font-medium">
+            <p className="pt-3 text-white pb-1 text-xl">{name || "No Name Available"}</p>
+            <p className=" text-gray-400 text-xl font-medium">
                 {currency}
                 {price || "N/A"}
             </p>

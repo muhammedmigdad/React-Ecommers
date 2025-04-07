@@ -41,17 +41,17 @@ export default function ProductReview({ productId }) {
 
   return (
     <div className="p-4 border rounded-md shadow-md bg-white">
-      <h3 className="text-lg font-semibold mb-3">Write a Review</h3>
+      <h3 className="text-lg text-black font-semibold mb-3">Write a Review</h3>
       {error && <p className="text-red-500 mb-2">{error}</p>}
       {success && <p className="text-green-500 mb-2">{success}</p>}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div>
-          <label className="text-sm font-medium">Rating:</label>
+          <label className="text-sm text-black font-medium">Rating:</label>
           <select
             value={rating}
             onChange={(e) => setRating(Number(e.target.value))}
-            className="border p-2 rounded w-full mt-1"
+            className="border text-black p-2 rounded w-full mt-1"
             disabled={isSubmitting}
           >
             {[1, 2, 3, 4, 5].map((num) => (
@@ -61,13 +61,13 @@ export default function ProductReview({ productId }) {
         </div>
 
         <div>
-          <label className="text-sm font-medium">Comment:</label>
+          <label className="text-sm text-black font-medium">Comment:</label>
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="Write your review..."
             required
-            className="border p-2 rounded w-full mt-1 min-h-[100px]"
+            className="border p-2 text-black rounded w-full mt-1 min-h-[100px]"
             disabled={isSubmitting}
           />
         </div>

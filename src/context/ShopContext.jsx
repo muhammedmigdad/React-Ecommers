@@ -1,3 +1,4 @@
+// src/context/ShopContext.js
 import { createContext, useEffect, useState, useMemo } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -11,24 +12,36 @@ const ShopContextProvider = ({ children }) => {
     const [search, setSearch] = useState('');
     const [showSearch, setShowSearch] = useState(false);
     const [cartItems, setCartItems] = useState({});
-    const [products, setProducts] = useState([]); 
+    const [products, setProducts] = useState([]);
+    const [loadingProducts, setLoadingProducts] = useState(true);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
         const loadProducts = async () => {
             try {
+                setLoadingProducts(true);
                 const data = await fetchProducts();
                 setProducts(data);
             } catch (error) {
+                setError("Failed to load products");
                 console.error("Error fetching products:", error);
+            } finally {
+                setLoadingProducts(false);
             }
         };
         loadProducts();
     }, []);
 
-    const addToCart = (itemId, size) => {
+    const addToCart = (itemId, size, maxQuantity = 10) => {
         if (!size) {
             toast.error('Select product size');
+            return;
+        }
+
+        const currentQty = cartItems[itemId]?.[size] || 0;
+        if (currentQty >= maxQuantity) {
+            toast.error(`Maximum quantity (${maxQuantity}) reached`);
             return;
         }
 
@@ -36,6 +49,7 @@ const ShopContextProvider = ({ children }) => {
             const newCart = { ...prevCart };
             if (!newCart[itemId]) newCart[itemId] = {};
             newCart[itemId][size] = (newCart[itemId][size] || 0) + 1;
+            toast.success('Item added to cart');
             return newCart;
         });
     };
@@ -74,7 +88,6 @@ const ShopContextProvider = ({ children }) => {
         });
     };
 
-    // Make cartTotal reactive using useMemo
     const cartTotal = useMemo(() => {
         const item_total = getCartAmount();
         return {
@@ -82,7 +95,7 @@ const ShopContextProvider = ({ children }) => {
             delivery: delivery_fee,
             total: item_total + delivery_fee
         };
-    }, [cartItems, products, delivery_fee]); // Dependencies that trigger recalculation
+    }, [cartItems, products, delivery_fee]);
 
     return (
         <ShopContext.Provider value={{ 
@@ -95,12 +108,15 @@ const ShopContextProvider = ({ children }) => {
             showSearch, 
             setShowSearch, 
             cartItems, 
+            setCartItems, // Added
             addToCart, 
             getCartCount, 
             updateQuantity, 
             getCartAmount, 
             navigate, 
-            cartTotal 
+            cartTotal,
+            loadingProducts,
+            error
         }}>
             {children}
         </ShopContext.Provider>

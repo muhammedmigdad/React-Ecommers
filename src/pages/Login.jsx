@@ -99,7 +99,7 @@ function Login() {
 
         <button
           type="submit"
-          className="bg-black text-white font-light px-8 py-2 mt-4 rounded-md transition-transform duration-200 hover:scale-105 disabled:opacity-50 flex items-center justify-center gap-2"
+          className="bg-black text-white mb-3 font-light px-8 py-2 mt-4 rounded-md transition-transform duration-200 hover:scale-105 disabled:opacity-50 flex items-center justify-center gap-2"
           disabled={loading}
         >
           {loading ? (

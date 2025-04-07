@@ -15,7 +15,7 @@ function About() {
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 50 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className="container mx-auto px-4 py-8"
+      className="container px-10 bg-black  mx-auto  py-8"
     >
       {/* Header Section */}
       <motion.header
@@ -24,7 +24,7 @@ function About() {
         transition={{ duration: 0.6 }}
         className="text-center mb-12"
       >
-        <h1 className="text-4xl font-bold mb-4">About Us</h1>
+        <h1 className="text-4xl text-white font-bold mb-4">About Us</h1>
         <p className="text-lg text-gray-600">
           Discover the latest trends in Men, Women, and Kids' fashion.
         </p>
@@ -41,7 +41,7 @@ function About() {
         >
           {/* Our Story Section */}
           <div className="mb-8">
-            <h2 className="text-3xl font-semibold mb-4">Our Story</h2>
+            <h2 className="text-3xl text-white font-semibold mb-4">Our Story</h2>
             <p className="text-gray-700">
               Welcome to our fashion store! We specialize in high-quality clothing
               for Men, Women, and Kids. Our goal is to bring the latest styles to

@@ -65,7 +65,7 @@ function Product() {
   const emptyStars = 5 - fullStars;
 
   return (
-    <div className="border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100">
+    <div className="border-t-2 pt-10 px-10 bg-black text-white transition-opacity ease-in duration-500 opacity-100">
       <div className="flex gap-12 sm:gap-12 flex-col sm:flex-row">
         {/* Image Gallery */}
         <div className="flex-1 flex flex-col-reverse gap-3 sm:flex-row">
@@ -100,15 +100,15 @@ function Product() {
 
           {/* Size Selection */}
           {showSizeSelector && (
-            <div className="flex flex-col my-8 gap-4">
+            <div className="flex flex-col text-gray-400 my-8 gap-4">
               <p>Select Size</p>
               <div className="flex gap-2 flex-wrap">
                 {availableSizes.map((size) => (
                   <button
                     key={size.size_code}
                     onClick={() => setSelectedSize(size.size_code)}
-                    className={`border py-2 px-4 bg-gray-100 ${
-                      selectedSize === size.size_code ? 'border-orange-500' : ''
+                    className={`border py-3 px-4 bg-gray-100 ${
+                      selectedSize === size.size_code ? 'border-orange-600' : ''
                     } ${!size.in_stock ? 'opacity-50 cursor-not-allowed' : ''}`}
                     disabled={!size.in_stock}
                   >
@@ -144,7 +144,7 @@ function Product() {
               addToCart(productData.id, selectedSize);
               alert('Product added to cart!');
             }}
-            className="bg-black text-white py-3 px-8 text-sm active:bg-gray-700 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="bg-[#5d5d5d] text-white py-3 px-8 text-sm active:bg-gray-700 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
             disabled={!availableSizes.find(s => s.size_code === selectedSize)?.stock_quantity}
           >
             {availableSizes.find(s => s.size_code === selectedSize)?.stock_quantity > 0 ? 'ADD TO CART' : 'OUT OF STOCK'}

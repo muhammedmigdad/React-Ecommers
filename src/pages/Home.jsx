@@ -6,7 +6,7 @@ import OurPolicy from '../compontents/OurPolicy'
 import NewsletterBox from '../compontents/NewsletterBox'
 function Home() {
   return (
-    <div>
+    <div className=' px-10  bg-black text-white'>
       <Hero/>
       <LatestCollection/>
       <BestSeller/>

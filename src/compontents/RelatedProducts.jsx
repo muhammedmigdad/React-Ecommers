@@ -52,7 +52,7 @@ function RelatedProducts({ category, subCategory }) {
 
   return (
     <motion.div
-      className="my-24"
+      className="my-24 px-10 bg-black text-white"
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"

@@ -3,10 +3,10 @@ import { assets } from "../assets/assets";
 
 function Footer() {
   return (
-    <div className="bg-gray-900 rounded-md text-white">
-      <div className="flex flex-col sm:grid grid-cols-[3fr_1fr_1fr] pt-8 gap-14 my-10 mt-40 text-sm max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 backdrop-blur-sm bg-opacity-80">
+    <div className="bg-gray-700   text-white">
+      <div className="flex flex-col sm:grid grid-cols-[3fr_1fr_1fr] pt-8 gap-14  text-sm max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 backdrop-blur-sm bg-opacity-80">
         <div>
-          <img src={assets.logo} className="mb-5 w-32" alt="Forever Logo" />
+          <img src={assets.image1} className="mb-5 w-32" alt="Forever Logo" />
           <p className="w-full md:w-2/3 text-gray-300">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam minima consequuntur laboriosam rerum quae inventore error provident aspernatur suscipit maxime nam dolores, praesentium omnis nulla!
           </p>

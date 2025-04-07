@@ -62,14 +62,14 @@ function LatestCollection() {
                     variants={containerVariants}
                 >
                 {latestProducts.map((item) => (
-                    <motion.div key={item.id} variants={itemVariants} whileHover="hover">
-                        <ProductItem
-                        name={item.name}
-                        id={item.id}
-                        price={item.sale_price || item.regular_price}
-                        image={item.mainimage}  // Make sure this matches the exact key in your data
-                        className="w-full"
-                        />
+                    <motion.div key={item.id}  variants={itemVariants} whileHover="hover">
+                  <ProductItem
+                    name={item.name}
+                    id={item.id}
+                    price={item.sale_price || item.regular_price}
+                    image={item.mainimage}
+                    className="w-full"
+                  />
                     </motion.div>
                 ))}
                 </motion.div>

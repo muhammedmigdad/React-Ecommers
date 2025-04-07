@@ -14,7 +14,7 @@ function Contact() {
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 50 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className="container mx-auto px-4 py-8"
+      className="container bg-black text-white mx-auto px-14 py-8"
     >
       {/* Header Section */}
       <header className="text-center mb-12">
@@ -52,7 +52,7 @@ function Contact() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
             {/* Store Location */}
             <div className="p-4 bg-white rounded-lg shadow-sm">
-              <h3 className="text-lg font-medium mb-2">📍 Store Location</h3>
+              <h3 className="text-lg font-medium text-black mb-2">📍 Store Location</h3>
               <p className="text-gray-700">
                 123 Fashion Street<br />
                 New York, NY 10001<br />
@@ -62,7 +62,7 @@ function Contact() {
 
             {/* Opening Hours */}
             <div className="p-4 bg-white rounded-lg shadow-sm">
-              <h3 className="text-lg font-medium mb-2">⏰ Opening Hours</h3>
+              <h3 className="text-lg font-medium text-black mb-2">⏰ Opening Hours</h3>
               <p className="text-gray-700">
                 Mon - Fri: 9 AM - 8 PM<br />
                 Sat: 10 AM - 6 PM<br />
@@ -72,7 +72,7 @@ function Contact() {
 
             {/* Contact Details */}
             <div className="p-4 bg-white rounded-lg shadow-sm">
-              <h3 className="text-lg font-medium mb-2">📞 Contact Info</h3>
+              <h3 className="text-lg font-medium text-black mb-2">📞 Contact Info</h3>
               <p className="text-gray-700">
                 Phone: (555) 123-4567<br />
                 Email: support@fashionstore.com

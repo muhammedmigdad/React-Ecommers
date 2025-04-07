@@ -45,9 +45,9 @@ const Navbar = () => {
   };
 
   return (
-    <div className="flex justify-between items-center py-5 font-medium relative">
+    <div className="flex  bg-[#ffffff] justify-between items-center px-8  font-medium relative">
       <Link to="/">
-        <img src={assets.logo} alt="Logo" className="w-36" />
+        <img src={assets.image1} alt="Logo" className="w-36" />
       </Link>
 
       <ul className="hidden sm:flex gap-5 text-sm text-gray-700">
@@ -102,6 +102,12 @@ const Navbar = () => {
             </div>
           )}
         </div>
+        <Link  className="relative">
+          <img src={assets.like} className="w-5 min-w-5" alt="like" />
+          <p className="absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
+            
+          </p>
+        </Link>
 
         <Link to="/cart" className="relative">
           <img src={assets.cart_icon} className="w-5 min-w-5" alt="Cart" />
@@ -109,6 +115,7 @@ const Navbar = () => {
             {getCartCount()}
           </p>
         </Link>
+
 
         <img
           onClick={() => setMobileMenuOpen(true)}
