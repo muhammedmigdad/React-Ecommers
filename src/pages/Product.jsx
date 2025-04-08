@@ -1,9 +1,48 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import RelatedProducts from '../compontents/RelatedProducts';
 import axios from '../compontents/services/axios';
 import ProductReview from '../compontents/ProductReview';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
+
+const containerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeInOut' } },
+};
+
+const imageGalleryVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: 'easeOut', staggerChildren: 0.1 } },
+};
+
+const thumbnailVariants = {
+  initial: { opacity: 0.6, scale: 0.9 },
+  hover: { opacity: 1, scale: 1.05 },
+  active: { opacity: 1, scale: 1 },
+};
+
+const productDetailsVariants = {
+  hidden: { opacity: 0, x: 20 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: 'easeOut', delayChildren: 0.2 } },
+};
+
+const infoVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const sizeButtonVariants = {
+  initial: { scale: 1, backgroundColor: 'rgba(255, 255, 255, 0.1)' },
+  hover: { scale: 1.1, backgroundColor: 'rgba(255, 255, 255, 0.2)' },
+  active: { scale: 1, backgroundColor: '#ff6b6b' },
+  disabled: { opacity: 0.5, cursor: 'not-allowed' },
+};
+
+const addToCartVariants = {
+  hover: { scale: 1.08, backgroundColor: '#ff4757' },
+  tap: { scale: 0.98 },
+};
 
 function Product() {
   const { productId } = useParams();
@@ -15,6 +54,36 @@ function Product() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [availableSizes, setAvailableSizes] = useState([]);
+  const [zoom, setZoom] = useState(1);
+  const [isHovering, setIsHovering] = useState(false);
+  const imageRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    setIsHovering(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+    setZoom(1);
+  };
+
+  const handleMouseMove = (event) => {
+    if (isHovering && imageRef.current) {
+      const rect = imageRef.current.getBoundingClientRect();
+      const xPct = (event.clientX - rect.left) / rect.width;
+      const yPct = (event.clientY - rect.top) / rect.height;
+
+      setZoom(2); // Adjust zoom level as needed
+
+      imageRef.current.style.transformOrigin = `${xPct * 100}% ${yPct * 100}%`;
+    }
+  };
+
+  const imageStyle = {
+    transform: `scale(${zoom})`,
+    transition: 'transform 0.3s ease-out',
+    cursor: 'zoom-in',
+  };
 
   useEffect(() => {
     if (!productId || productId === 'undefined') {
@@ -65,72 +134,99 @@ function Product() {
   const emptyStars = 5 - fullStars;
 
   return (
-    <div className="border-t-2 pt-10 px-10 bg-black text-white transition-opacity ease-in duration-500 opacity-100">
-      <div className="flex gap-12 sm:gap-12 flex-col sm:flex-row">
+    <motion.div
+      className="pt-10 pb-16 px-6 bg-black text-white transition-opacity ease-in duration-500 opacity-100"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
         {/* Image Gallery */}
-        <div className="flex-1 flex flex-col-reverse gap-3 sm:flex-row">
-          <div className="flex sm:flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal w-full sm:w-[18.7%]">
+        <motion.div className="flex flex-col md:flex-row gap-6" variants={imageGalleryVariants}>
+          <motion.div className="flex-shrink-0 w-full md:w-32 flex overflow-x-auto md:flex-col md:overflow-y-auto justify-start md:justify-center" variants={imageGalleryVariants}>
             {[productData.mainimage, productData.image_1, productData.image_2, productData.image_3, productData.image_4]
               .filter(Boolean)
               .map((imgSrc, index) => (
-                <img
+                <motion.img
                   key={index}
                   src={imgSrc}
                   alt={`Product thumbnail ${index}`}
-                  className={`w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer ${image === imgSrc ? 'border-2 border-orange-500' : ''}`}
+                  className={`w-24 h-24 md:w-full md:h-auto object-cover rounded-md cursor-pointer mb-2 md:mb-4 ${image === imgSrc ? 'border-2 border-red-500' : ''}`}
                   onClick={() => setImage(imgSrc)}
+                  variants={thumbnailVariants}
+                  initial="initial"
+                  whileHover="hover"
+                  animate={image === imgSrc ? 'active' : 'initial'}
                 />
               ))}
+          </motion.div>
+          <div className="w-full overflow-hidden rounded-lg shadow-md">
+            <div
+              className="relative w-full h-auto"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              onMouseMove={handleMouseMove}
+            >
+              <motion.img
+                ref={imageRef}
+                className="w-full h-full object-contain md:object-cover"
+                src={image || '/placeholder.jpg'}
+                alt={productData.name}
+                style={imageStyle}
+              />
+            </div>
           </div>
-          <div className="w-full sm:w-[80%]">
-            <img className="w-full h-auto" src={image || '/placeholder.jpg'} alt={productData.name} />
-          </div>
-        </div>
+        </motion.div>
 
         {/* Product Details */}
-        <div className="flex-1">
-          <h1 className="text-2xl font-medium mt-2">{productData.name}</h1>
-          <div className="flex items-center mt-2">
+        <motion.div className="py-4 flex flex-col justify-center" variants={productDetailsVariants}>
+          <motion.h1 className="text-4xl font-bold mb-4 text-red-500 tracking-tight" variants={infoVariants}>{productData.name}</motion.h1>
+          <motion.div className="flex items-center mb-3" variants={infoVariants}>
             <span className="text-yellow-400">{'★'.repeat(fullStars)}</span>
-            <span className="text-gray-400">{'★'.repeat(emptyStars)}</span>
-            <span className="ml-2 text-gray-600">({normalizedRating.toFixed(1)})</span>
-          </div>
-          <p className="mt-5 text-3xl font-medium">{currency}{productData.sale_price || productData.regular_price}</p>
-          <p className="mt-2 text-gray-500 md:w-4/5">{productData.description || 'No description available'}</p>
+            <span className="text-gray-600">{'★'.repeat(emptyStars)}</span>
+            <span className="ml-2 text-gray-400">({normalizedRating.toFixed(1)})</span>
+          </motion.div>
+          <motion.p className="text-3xl font-semibold mb-5" variants={infoVariants}>{currency}{productData.sale_price || productData.regular_price}</motion.p>
+          <motion.p className="text-gray-300 mb-6 leading-relaxed" variants={infoVariants}>{productData.description || 'No description available'}</motion.p>
 
           {/* Size Selection */}
           {showSizeSelector && (
-            <div className="flex flex-col text-gray-400 my-8 gap-4">
-              <p>Select Size</p>
-              <div className="flex gap-2 flex-wrap">
+            <motion.div className="mb-6" variants={infoVariants}>
+              <p className="text-lg text-gray-300 mb-3">Select Size:</p>
+              <div className="flex flex-wrap gap-3">
                 {availableSizes.map((size) => (
-                  <button
+                  <motion.button
                     key={size.size_code}
                     onClick={() => setSelectedSize(size.size_code)}
-                    className={`border py-3 px-4 bg-gray-100 ${
-                      selectedSize === size.size_code ? 'border-orange-600' : ''
-                    } ${!size.in_stock ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`py-2 px-4 rounded-md text-gray-200 border border-gray-500 ${
+                      selectedSize === size.size_code ? 'bg-red-500 border-red-500' : ''
+                    }`}
                     disabled={!size.in_stock}
+                    variants={sizeButtonVariants}
+                    initial="initial"
+                    whileHover="hover"
+                    animate={selectedSize === size.size_code ? 'active' : 'initial'}
+                    whileTap="tap"
                   >
                     {size.size_code.toUpperCase()}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
               {selectedSize && (
-                <p className="text-sm text-gray-600">Selected: {sizeOptions[selectedSize.toLowerCase()]}</p>
+                <p className="text-sm text-gray-400 mt-2">Selected: {sizeOptions[selectedSize.toLowerCase()]}</p>
               )}
-            </div>
+            </motion.div>
           )}
 
           {/* Stock Information */}
-          <p className="mb-4 text-sm">
-            {availableSizes.find(s => s.size_code === selectedSize)?.stock_quantity > 0 
-              ? `In Stock (${availableSizes.find(s => s.size_code === selectedSize)?.stock_quantity} available)`
-              : 'Out of Stock'}
-          </p>
+          <motion.p className="mb-4 text-sm text-gray-400" variants={infoVariants}>
+            {availableSizes.find(s => s.size_code === selectedSize)?.stock_quantity > 0
+              ? `Availability: In Stock (${availableSizes.find(s => s.size_code === selectedSize)?.stock_quantity} available)`
+              : 'Availability: Out of Stock'}
+          </motion.p>
 
           {/* Add to Cart Button */}
-          <button
+          <motion.button
             onClick={() => {
               if (showSizeSelector && !selectedSize) {
                 alert('Please select a size');
@@ -142,23 +238,29 @@ function Product() {
                 return;
               }
               addToCart(productData.id, selectedSize);
-              alert('Product added to cart!');
+              alert('Added to cart!');
             }}
-            className="bg-[#5d5d5d] text-white py-3 px-8 text-sm active:bg-gray-700 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="bg-gray-600 text-white py-3 px-8 text-sm rounded-md focus:outline-none disabled:bg-gray-700 disabled:cursor-not-allowed"
             disabled={!availableSizes.find(s => s.size_code === selectedSize)?.stock_quantity}
+            variants={addToCartVariants}
+            whileHover="hover"
+            whileTap="tap"
           >
             {availableSizes.find(s => s.size_code === selectedSize)?.stock_quantity > 0 ? 'ADD TO CART' : 'OUT OF STOCK'}
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </div>
 
       {/* Product Review Section */}
-      <div className="mt-10">
+      <div className="mt-16">
         <ProductReview productId={productId} />
       </div>
 
-      <RelatedProducts category={productData.category} />
-    </div>
+      {/* Related Products Section */}
+      <div className="mt-16">
+        <RelatedProducts category={productData.category} />
+      </div>
+    </motion.div>
   );
 }
 

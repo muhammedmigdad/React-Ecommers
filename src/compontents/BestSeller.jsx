@@ -28,7 +28,7 @@ function BestSeller() {
     if (error) return <div className="my-10 text-center"><Title text1="BEST" text2="SELLERS" /><p className="text-red-500">{error}</p></div>;
 
     return (
-        <div className="my-10">
+        <div className="my-10 px-10">
             <motion.div className="text-center text-3xl py-8"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}

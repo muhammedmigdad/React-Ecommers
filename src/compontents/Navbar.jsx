@@ -45,42 +45,42 @@ const Navbar = () => {
   };
 
   return (
-    <div className="flex  bg-[#ffffff] justify-between items-center px-8  font-medium relative">
-      <Link to="/">
-        <img src={assets.image1} alt="Logo" className="w-36" />
+    <div className="flex bg-[#ffffff] justify-between items-center px-4 sm:px-6 md:px-8 lg:px-10 font-medium relative">
+      <Link to="/" className="block">
+        <img src={assets.image1} alt="Logo" className="w-28 sm:w-32 md:w-36" />
       </Link>
 
-      <ul className="hidden sm:flex gap-5 text-sm text-gray-700">
+      <ul className="hidden md:flex gap-3 lg:gap-5 text-sm text-gray-700">
         {["Collection", "About", "Contact"].map((item) => (
           <NavLink
             key={item}
             to={`/${item.toLowerCase()}`}
             className="flex flex-col items-center gap-1"
           >
-            <p>{item.toUpperCase()}</p>
+            <p className="text-xs sm:text-sm">{item.toUpperCase()}</p>
             <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 hidden" />
           </NavLink>
         ))}
       </ul>
 
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
         <img
           onClick={() => setShowSearch(true)}
           src={assets.search_icon}
-          className="w-5 cursor-pointer"
+          className="w-4 sm:w-4.5 md:w-5 cursor-pointer"
           alt="Search"
         />
 
         <div className="relative z-50 dropdown-container">
           <img
             src={assets.profile_icon}
-            className="w-5 cursor-pointer"
+            className="w-4 sm:w-4.5 md:w-5 cursor-pointer"
             alt="Profile"
             onClick={() => setDropdownVisible(!dropdownVisible)}
           />
           {dropdownVisible && (
-            <div className="absolute right-0 mt-2 bg-white shadow-lg rounded w-40">
-              <div className="flex flex-col gap-2 py-3 px-5 text-gray-500">
+            <div className="absolute right-0 mt-2 bg-white shadow-lg rounded w-32 sm:w-36 md:w-40">
+              <div className="flex flex-col gap-1.5 sm:gap-2 py-2 sm:py-3 px-3 sm:px-5 text-gray-500 text-xs sm:text-sm">
                 <p className="cursor-pointer hover:text-black">My Profile</p>
                 <p className="cursor-pointer hover:text-black">Orders</p>
                 {isAuthenticated ? (
@@ -102,25 +102,24 @@ const Navbar = () => {
             </div>
           )}
         </div>
-        <Link  className="relative">
-          <img src={assets.like} className="w-5 min-w-5" alt="like" />
-          <p className="absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
-            
+        <Link className="relative">
+          <img src={assets.like} className="w-4 sm:w-4.5 md:w-5 min-w-[16px]" alt="like" />
+          <p className="absolute right-[-3px] bottom-[-3px] w-3.5 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
+
           </p>
         </Link>
 
         <Link to="/cart" className="relative">
-          <img src={assets.cart_icon} className="w-5 min-w-5" alt="Cart" />
-          <p className="absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
+          <img src={assets.cart_icon} className="w-4 sm:w-4.5 md:w-5 min-w-[16px]" alt="Cart" />
+          <p className="absolute right-[-3px] bottom-[-3px] w-3.5 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
             {getCartCount()}
           </p>
         </Link>
 
-
         <img
           onClick={() => setMobileMenuOpen(true)}
           src={assets.menu_icon}
-          className="w-5 cursor-pointer sm:hidden"
+          className="w-4 sm:w-4.5 md:w-5 cursor-pointer md:hidden"
           alt="Menu"
         />
       </div>
@@ -128,7 +127,7 @@ const Navbar = () => {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            className="fixed top-0 right-0 h-full bg-white shadow-lg z-50 w-64 sm:hidden"
+            className="fixed top-0 right-0 h-full bg-white shadow-lg z-50 w-64 sm:w-80 md:hidden"
             variants={menuVariants}
             initial="closed"
             animate="open"
@@ -147,7 +146,7 @@ const Navbar = () => {
             </motion.div>
 
             <motion.ul
-              className="flex flex-col text-gray-600"
+              className="flex flex-col text-gray-600 text-sm"
               initial="closed"
               animate="open"
             >

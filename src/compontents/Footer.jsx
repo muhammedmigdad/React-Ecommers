@@ -1,39 +1,116 @@
 import React from "react";
 import { assets } from "../assets/assets";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFacebook,
+  faTwitter,
+  faInstagram,
+} from "@fortawesome/free-brands-svg-icons";
+import { faMapMarkerAlt, faPhone, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+
+library.add(faFacebook, faTwitter, faInstagram, faMapMarkerAlt, faPhone, faEnvelope);
 
 function Footer() {
   return (
-    <div className="bg-gray-700   text-white">
-      <div className="flex flex-col sm:grid grid-cols-[3fr_1fr_1fr] pt-8 gap-14  text-sm max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 backdrop-blur-sm bg-opacity-80">
-        <div>
-          <img src={assets.image1} className="mb-5 w-32" alt="Forever Logo" />
-          <p className="w-full md:w-2/3 text-gray-300">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam minima consequuntur laboriosam rerum quae inventore error provident aspernatur suscipit maxime nam dolores, praesentium omnis nulla!
+    <footer className="bg-gray-800 text-white py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        {/* Logo and Description */}
+        <div className="mb-6 md:mb-0">
+          <img src={assets.image1} className="mb-4 w-32" alt="Forever Logo" />
+          <p className="text-gray-400 text-sm">
+            Discover timeless styles and exceptional quality. We are dedicated to
+            providing you with a curated collection that lasts.
           </p>
+          {/* Social Icons */}
+          <div className="mt-4 flex space-x-4">
+            <a href="#" className="hover:text-indigo-500 transition-colors">
+              <FontAwesomeIcon icon={faFacebook} size="lg" />
+            </a>
+            <a href="#" className="hover:text-indigo-500 transition-colors">
+              <FontAwesomeIcon icon={faTwitter} size="lg" />
+            </a>
+            <a href="#" className="hover:text-indigo-500 transition-colors">
+              <FontAwesomeIcon icon={faInstagram} size="lg" />
+            </a>
+          </div>
         </div>
+
+        {/* Company Links */}
         <div>
-          <p className="text-xl font-medium mb-5">COMPANY</p>
-          <ul className="flex flex-col gap-2 text-gray-300">
-            <li className="hover:text-white transition-colors cursor-pointer">Home</li>
-            <li className="hover:text-white transition-colors cursor-pointer">About</li>
-            <li className="hover:text-white transition-colors cursor-pointer">Delivery</li>
-            <li className="hover:text-white transition-colors cursor-pointer">Privacy Policy</li>
+          <h3 className="text-xl font-semibold mb-4">Company</h3>
+          <ul className="text-gray-400 space-y-2">
+            <li>
+              <a href="#" className="hover:text-indigo-500 transition-colors">
+                Home
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:text-indigo-500 transition-colors">
+                About Us
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:text-indigo-500 transition-colors">
+                Shipping & Delivery
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:text-indigo-500 transition-colors">
+                Privacy Policy
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:text-indigo-500 transition-colors">
+                Terms & Conditions
+              </a>
+            </li>
           </ul>
         </div>
+
+        {/* Get in Touch */}
         <div>
-          <p className="text-xl font-medium mb-5">GET IN TOUCH</p>
-          <ul className="flex flex-col gap-2 text-gray-300">
-            <li>+1-212-456-8684</li>
-            <li>contact@foreveryou.com</li>
+          <h3 className="text-xl font-semibold mb-4">Get In Touch</h3>
+          <ul className="text-gray-400 space-y-2">
+            <li className="flex items-center">
+              <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-3" />
+              <span>123 Main Street, Anytown, USA</span>
+            </li>
+            <li className="flex items-center">
+              <FontAwesomeIcon icon={faPhone} className="mr-3" />
+              <span>+1 (555) 123-4567</span>
+            </li>
+            <li className="flex items-center">
+              <FontAwesomeIcon icon={faEnvelope} className="mr-3" />
+              <span>info@foreveryou.com</span>
+            </li>
           </ul>
         </div>
+
+        {/* Newsletter */}
+        <div>
+          <h3 className="text-xl font-semibold mb-4">Newsletter</h3>
+          <p className="text-gray-400 text-sm mb-2">
+            Subscribe to our newsletter and get 10% off your first purchase!
+          </p>
+          <div className="flex">
+            <input
+              type="email"
+              placeholder="Your email address"
+              className="bg-gray-700 border border-gray-600 rounded-l-md py-2 px-3 text-white focus:outline-none focus:border-indigo-500 flex-grow"
+            />
+            <button className="bg-indigo-500 hover:bg-indigo-600 text-white py-2 px-4 rounded-r-md focus:outline-none transition-colors">
+              Subscribe
+            </button>
+          </div>
+        </div>
       </div>
-      <div className="border-t border-gray-700 bg-opacity-90">
-        <p className="py-5 text-sm text-center text-gray-400">
-          Copyright 2024@ forever.com - All Rights Reserved.
-        </p>
+
+      {/* Bottom Copyright */}
+      <div className="border-t border-gray-700 mt-8 py-4 text-center text-gray-500 text-sm">
+        &copy; {new Date().getFullYear()} Forever You. All Rights Reserved.
       </div>
-    </div>
+    </footer>
   );
 }
 

@@ -93,13 +93,6 @@ function Collection() {
       className="min-h-screen px-10 pt-4 md:pt-6 flex flex-col md:flex-row relative"
       style={{ background: colors.background }}
     >
-      {/* Filter Toggle Button */}
-      <button
-        onClick={toggleFilterVisibility}
-        className="fixed top-4 left-4 z-50 p-2 bg-gray-800 text-white rounded-full md:hidden"
-      >
-        {isFilterVisible ? "Hide Filters" : "Show Filters"}
-      </button>
 
       {/* Filter Section (Left Side) */}
       <div
@@ -234,9 +227,9 @@ function Collection() {
                     </button>
                     <button
                       onClick={() => handleToggleWishlist(item.id)}
-                      className=" text-white flex items-center text-sm  transition-colors"
+                      className=" text-white flex items-center text-sm  transition-colors"
                     >
-                      <img className="w-7 rounded-full  hover:bg-red-500  h-5 mr-2" src={assets.like} alt="Like" />
+                      <img className="w-7 rounded-full  hover:bg-red-500  h-5 mr-2" src={assets.like} alt="Like" />
                     </button>
                   </div>
                 </div>

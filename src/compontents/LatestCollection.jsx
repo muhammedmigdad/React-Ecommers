@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ShopContext } from "../context/ShopContext";
 import Title from "./Title";
 import ProductItem from "./ProductItem";
+import api from "../compontents/services/axios"; // Import your Axios instance
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -29,18 +30,37 @@ const itemVariants = {
 };
 
 function LatestCollection() {
-    const { products } = useContext(ShopContext);
+    const { setProducts } = useContext(ShopContext); // Assuming you might want to update the global products state
     const [latestProducts, setLatestProducts] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (products && products.length > 0) {
-            setLatestProducts(products.slice(0, 10));
-        }
-    }, [products]);
+        const fetchLatestProducts = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const response = await api.get("/products/"); // Replace with your actual endpoint for latest products
+                if (!Array.isArray(response.data)) {
+                    throw new Error("Invalid response format: Expected an array for latest products");
+                }
+                setLatestProducts(response.data);
+                // If you want to update the global products state with the latest ones:
+                // setProducts(response.data);
+            } catch (err) {
+                console.error("Error fetching latest products:", err);
+                setError(err.message || "Failed to fetch latest products.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchLatestProducts();
+    }, [setProducts]);
 
     return (
         <motion.div
-            className="my-10"
+            className="my-10 px-10"
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -56,25 +76,29 @@ function LatestCollection() {
             </div>
 
             {/* Products Grid */}
-            {latestProducts.length > 0 ? (
+            {loading ? (
+                <p className="text-center text-gray-500">Loading latest collections...</p>
+            ) : error ? (
+                <p className="text-center text-red-500">{error}</p>
+            ) : latestProducts.length > 0 ? (
                 <motion.div
                     className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6"
                     variants={containerVariants}
                 >
-                {latestProducts.map((item) => (
-                    <motion.div key={item.id}  variants={itemVariants} whileHover="hover">
-                  <ProductItem
-                    name={item.name}
-                    id={item.id}
-                    price={item.sale_price || item.regular_price}
-                    image={item.mainimage}
-                    className="w-full"
-                  />
-                    </motion.div>
-                ))}
+                    {latestProducts.map((item) => (
+                        <motion.div key={item.id} variants={itemVariants} whileHover="hover">
+                            <ProductItem
+                                name={item.name}
+                                id={item.id}
+                                price={item.sale_price || item.regular_price}
+                                image={item.mainimage}
+                                className="w-full"
+                            />
+                        </motion.div>
+                    ))}
                 </motion.div>
             ) : (
-                <p className="text-center text-gray-500">Loading latest collections...</p>
+                <p className="text-center text-gray-500">No latest collections available.</p>
             )}
         </motion.div>
     );
