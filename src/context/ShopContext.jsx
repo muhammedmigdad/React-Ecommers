@@ -1,4 +1,4 @@
-// src/context/ShopContext.js
+// src/context/ShopContext.jsx
 import { createContext, useEffect, useState, useMemo } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -98,22 +98,22 @@ const ShopContextProvider = ({ children }) => {
     }, [cartItems, products, delivery_fee]);
 
     return (
-        <ShopContext.Provider value={{ 
-            products, 
-            setProducts, 
-            currency, 
-            delivery_fee, 
-            search, 
-            setSearch, 
-            showSearch, 
-            setShowSearch, 
-            cartItems, 
+        <ShopContext.Provider value={{
+            products,
+            setProducts,
+            currency,
+            delivery_fee,
+            search,
+            setSearch,
+            showSearch,
+            setShowSearch,
+            cartItems,
             setCartItems, // Added
-            addToCart, 
-            getCartCount, 
-            updateQuantity, 
-            getCartAmount, 
-            navigate, 
+            addToCart,
+            getCartCount,
+            updateQuantity,
+            getCartAmount,
+            navigate,
             cartTotal,
             loadingProducts,
             error

@@ -9,9 +9,9 @@ function Home() {
     <div className='  bg-black text-white'>
       <Hero/>
       <LatestCollection/>
-      <BestSeller/>
-      <OurPolicy/>
       <NewsletterBox/>
+      <OurPolicy/>
+      <BestSeller/>
       
     </div>
   )
