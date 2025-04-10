@@ -1,3 +1,4 @@
+// src/components/Add.js
 import React from 'react';
 import { motion } from 'framer-motion';
 import { assets } from '../assets/assets';
@@ -39,7 +40,7 @@ function Add() {
           </div>
         </motion.div>
 
-        {/* Right Image */}
+        {/* Right Image with Black Shadow Overlay */}
         <motion.div className="w-full lg:w-1/2" variants={fadeIn}>
           <div className="relative w-full h-[400px] sm:h-[500px] lg:h-[550px] overflow-hidden rounded-3xl shadow-2xl">
             <img
@@ -47,6 +48,8 @@ function Add() {
               alt="Fashion Ad"
               className="w-full h-full object-cover object-center"
             />
+            {/* Black Shadow Overlay on Right Half */}
+            <div className="absolute inset-0 bg-gradient-to-l from-black/50 to-transparent pointer-events-none" />
           </div>
         </motion.div>
       </motion.div>

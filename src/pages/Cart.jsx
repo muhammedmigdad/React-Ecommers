@@ -1,115 +1,155 @@
-// src/components/Cart.js
 import React, { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
-import Title from '../compontents/Title'; // Fixed typo
-import CartTotal from '../compontents/CartTotel'; // Fixed typo
-import { assets } from '../assets/assets';
-import axios from '../compontents/services/axios';
+import Title from '../compontents/Title';
+import CartTotal from '../compontents/CartTotel';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import axios from '../compontents/services/axios';
 
 const Cart = () => {
-    const { 
-        cartItems, 
-        currency, 
-        updateQuantity, 
-        navigate, 
-        cartTotal,
+    const {
+        cartItems,
+        currency,
+        updateQuantity,
+        cartTotal: contextCartTotal,
         loadingProducts,
         error: contextError,
-        setCartItems // Add this from ShopContext
+        setCartItems
     } = useContext(ShopContext);
+
     const [cartDetails, setCartDetails] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
+
+    const fetchCart = async () => {
+        try {
+            const token = localStorage.getItem('access_token');
+            if (!token || token === "undefined") {
+                throw new Error('No access token found');
+            }
+
+            const response = await axios.get('/cart/', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            const { cart_items } = response.data;
+
+            const detailedItems = cart_items.map(item => ({
+                id: item.id,
+                product: {
+                    id: item.product.id,
+                    name: item.product.name || 'Unknown Product',
+                    mainimage: item.product.mainimage || '/placeholder.jpg',
+                },
+                size: item.size,
+                quantity: item.quantity,
+                price: item.price
+            }));
+
+            setCartDetails(detailedItems);
+
+            const syncedCartItems = {};
+            cart_items.forEach(item => {
+                if (!syncedCartItems[item.product.id]) {
+                    syncedCartItems[item.product.id] = {};
+                }
+                syncedCartItems[item.product.id][item.size] = item.quantity;
+            });
+            setCartItems(syncedCartItems);
+
+        } catch (err) {
+            if (err.response?.status === 401 || err.message === 'No access token found') {
+                setError('Session expired. Please log in again');
+                toast.error('You need to log in first');
+                localStorage.removeItem('access_token');
+                setTimeout(() => navigate('/login'), 2000);
+            } else {
+                setError(err.response?.data?.error || 'Failed to load cart details');
+                toast.error(err.response?.data?.error || 'Error loading cart');
+            }
+            throw err;
+        }
+    };
 
     useEffect(() => {
-        const checkAuthAndFetchCart = async () => {
-            const token = localStorage.getItem('access_token');
-            if (!token) {
-                setError('Please log in to view your cart');
-                toast.error('You need to log in first');
-                setTimeout(() => navigate('/login'), 2000);
-                setLoading(false);
-                return;
-            }
-
-            if (loadingProducts || contextError) {
-                setLoading(false);
-                setError(contextError);
-                return;
-            }
-
+        const loadCart = async () => {
             try {
-                const response = await axios.get('/cart/');
-                const { cart_items } = response.data;
-
-                const detailedItems = cart_items.map(item => ({
-                    id: item.id,
-                    product: {
-                        id: item.product.id,
-                        name: item.product.name || 'Unknown Product',
-                        mainimage: item.product.mainimage || '/placeholder.jpg',
-                    },
-                    size: item.size,
-                    quantity: item.quantity,
-                    price: item.price
-                }));
-
-                setCartDetails(detailedItems);
-
-                const syncedCartItems = {};
-                cart_items.forEach(item => {
-                    if (!syncedCartItems[item.product.id]) {
-                        syncedCartItems[item.product.id] = {};
-                    }
-                    syncedCartItems[item.product.id][item.size] = item.quantity;
-                });
-                setCartItems(syncedCartItems); // Sync with context
-
-            } catch (err) {
-                if (err.response?.status === 401) {
-                    setError('Session expired. Please log in again');
-                    toast.error('Session expired. Redirecting to login...');
-                    localStorage.removeItem('access_token');
-                    setTimeout(() => navigate('/login'), 2000);
-                } else {
-                    setError(err.response?.data?.error || 'Failed to load cart details');
+                const token = localStorage.getItem('access_token');
+                if (!token || token === "undefined") {
+                    throw new Error('No access token found');
                 }
+                setLoading(true);
+                await fetchCart();
+            } catch (err) {
+                // Already handled in fetchCart
             } finally {
                 setLoading(false);
             }
         };
 
-        checkAuthAndFetchCart();
-    }, [cartItems, loadingProducts, contextError, navigate, setCartItems]);
+        if (loadingProducts) return;
+
+        if (contextError) {
+            setError(contextError);
+            setLoading(false);
+            return;
+        }
+
+        loadCart();
+    }, [loadingProducts, contextError, setCartItems, navigate]);
 
     const handleQuantityChange = async (productId, size, value) => {
         const numValue = value === '' ? 0 : Number(value);
         if (numValue < 0) return;
 
-        const cartItem = cartDetails.find(item => 
+        const cartItem = cartDetails.find(item =>
             item.product.id === productId && item.size === size
         );
-        
+
         if (!cartItem) return;
 
         const prevQuantity = cartItem.quantity;
         updateQuantity(productId, size, numValue);
 
         try {
+            const token = localStorage.getItem('access_token');
+            if (!token || token === "undefined") {
+                throw new Error('No access token found');
+            }
+
             if (numValue === 0) {
-                await axios.delete(`/cart/remove/${cartItem.id}/`);
+                await axios.delete(`/cart/remove/${cartItem.id}/`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 toast.success('Item removed from cart');
+                setCartDetails(cartDetails.filter(item => item.id !== cartItem.id));
             } else {
-                await axios.put(`/cart/update/${cartItem.id}/`, { quantity: numValue });
+                await axios.put(`/cart/update/${cartItem.id}/`, 
+                    { quantity: numValue },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
                 toast.success('Cart updated');
+                setCartDetails(cartDetails.map(item =>
+                    item.id === cartItem.id ? { ...item, quantity: numValue } : item
+                ));
             }
         } catch (err) {
             updateQuantity(productId, size, prevQuantity);
-            toast.error(err.response?.data?.error || 'Failed to update cart');
-            if (err.response?.status === 401) {
-                toast.error('Session expired. Redirecting to login...');
+            if (err.response?.status === 401 || err.message === 'No access token found') {
+                toast.error('Session expired. Please log in again');
+                localStorage.removeItem('access_token');
                 setTimeout(() => navigate('/login'), 2000);
+            } else {
+                toast.error(err.response?.data?.error || 'Failed to update cart');
             }
         }
     };
@@ -151,40 +191,28 @@ const Cart = () => {
                             key={item.id}
                             className="py-4 border-t border-b text-gray-700 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] gap-4 items-center"
                         >
-                            <div className="flex items-start gap-6">
+                            {/* You can render product info here */}
+                            <div className="flex items-center gap-4">
                                 <img
-                                    src={item.product.mainimage || '/placeholder.jpg'}
-                                    className="w-16 sm:w-20"
+                                    src={item.product.mainimage}
                                     alt={item.product.name}
+                                    className="w-16 h-16 object-cover rounded"
                                 />
                                 <div>
-                                    <p className="text-xs sm:text-lg font-medium">
-                                        {item.product.name}
-                                    </p>
-                                    <div className="flex items-center mt-2 gap-5">
-                                        <p>
-                                            {currency}
-                                            {item.price.toFixed(2)}
-                                        </p>
-                                        <p className="px-2 sm:px-3 sm:py-1 border bg-slate-50">
-                                            {item.size.toUpperCase()}
-                                        </p>
-                                    </div>
+                                    <p>{item.product.name}</p>
+                                    <p className="text-sm text-gray-500">Size: {item.size}</p>
                                 </div>
                             </div>
                             <input
-                                onChange={(e) => handleQuantityChange(item.product.id, item.size, e.target.value)}
-                                className="border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1"
                                 type="number"
-                                min={0}
+                                min="0"
                                 value={item.quantity}
+                                onChange={(e) =>
+                                    handleQuantityChange(item.product.id, item.size, e.target.value)
+                                }
+                                className="border p-2 w-full text-center"
                             />
-                            <img
-                                onClick={() => handleQuantityChange(item.product.id, item.size, 0)}
-                                className="w-4 sm:w-5 cursor-pointer hover:opacity-70"
-                                src={assets.bin_icon}
-                                alt="Remove"
-                            />
+                            <p>{currency}{item.price}</p>
                         </div>
                     ))
                 )}
@@ -193,7 +221,7 @@ const Cart = () => {
             {cartDetails.length > 0 && (
                 <div className="flex justify-end my-20">
                     <div className="w-full sm:w-[450px]">
-                        <CartTotal cartTotal={cartTotal} />
+                        <CartTotal cartTotal={contextCartTotal} />
                         <div className="w-full text-end">
                             <button
                                 onClick={() => navigate('/placeorder')}

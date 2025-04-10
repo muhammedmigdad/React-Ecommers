@@ -1,8 +1,8 @@
-// src/compontents/Navbar.jsx
+// src/components/Navbar.jsx
 import React, { useContext, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { assets } from "../assets/assets.js";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext.jsx";
 
 const Navbar = () => {
@@ -10,25 +10,20 @@ const Navbar = () => {
     const { setShowSearch, getCartCount } = useContext(ShopContext);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [dropdownVisible, setDropdownVisible] = useState(false);
-    const [wishlistItemsCount, setWishlistItemsCount] = useState(0); // State for wishlist count
+    const [wishlistItemsCount, setWishlistItemsCount] = useState(0);
     const navigate = useNavigate();
+    const location = useLocation(); // 👈 detect route change
 
+    // ✅ Re-check auth status on every route change
     useEffect(() => {
         const token = localStorage.getItem("authToken");
         setIsAuthenticated(!!token);
-    }, []);
+    }, [location]);
 
-    // Placeholder for fetching wishlist count - Replace with your actual logic
     useEffect(() => {
-        // Replace this with your API call to get the number of wishlist items
         const fetchWishlistCount = async () => {
             try {
-                // const response = await axiosInstance.get('/wishlist/count', {
-                //     headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
-                // });
-                // setWishlistItemsCount(response.data.count);
-                // For now, setting a static value or 0 if API is not ready
-                setWishlistItemsCount(0);
+                setWishlistItemsCount(0); // Replace with API call if needed
             } catch (error) {
                 console.error("Error fetching wishlist count:", error);
                 setWishlistItemsCount(0);
@@ -128,6 +123,7 @@ const Navbar = () => {
                         </div>
                     )}
                 </div>
+
                 <Link to="/wishlist" className="relative">
                     <img src={assets.like} className="w-4 sm:w-4.5 md:w-5 min-w-[16px]" alt="like" />
                     <p className="absolute right-[-3px] bottom-[-3px] w-3.5 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">

@@ -1,6 +1,7 @@
+// src/compontents/CartTotel.js
 import React, { useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
-import Title from "./Title";
+import Title from "../compontents/Title";
 
 const CartTotal = ({ cartTotal }) => {
     const { currency } = useContext(ShopContext);

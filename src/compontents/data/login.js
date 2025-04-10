@@ -1,16 +1,15 @@
-import axios from '../services/axios'
+// components/data/login.js
+import axios from '../services/axios.js';
 
-const LOGIN_ENDPOINT = 'login/'
-
-const REGISTER_ENDPOINT = 'register/'
+const LOGIN_ENDPOINT = 'login/';
+const REGISTER_ENDPOINT = 'register/';
 
 export const loginAccount = async (body) => {
-    const { data } = await axios.post(LOGIN_ENDPOINT, body)
-    return data
-}
-
+  const { data } = await axios.post(LOGIN_ENDPOINT, body);
+  return data;
+};
 
 export const registerAccount = async (body) => {
-    const { data } = await axios.post(REGISTER_ENDPOINT, body)
-    return data
-}
+  const { data } = await axios.post(REGISTER_ENDPOINT, body);
+  return data;
+};
