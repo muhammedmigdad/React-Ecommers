@@ -51,7 +51,7 @@ function Collection() {
         if (subcategory.length > 0) params.subcategory = subcategory.join(",");
         if (sortType && sortType !== "relevant") params.sort = sortType;
 
-        const response = await axios.get("/product_view/", { params });
+        const response = await axios.get("product_view/", { params });
         if (!Array.isArray(response.data)) {
           throw new Error("Invalid response format: Expected an array");
         }

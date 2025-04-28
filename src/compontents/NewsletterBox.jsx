@@ -32,7 +32,7 @@ function Add() {
           </p>
           <div>
             <a
-              href="/shop"
+              href="/Collection"
               className="inline-block bg-pink-500 hover:bg-pink-600 text-white px-6 sm:px-8 py-3 text-base sm:text-lg rounded-full transition duration-300 shadow-md hover:shadow-lg"
             >
               Explore Collection

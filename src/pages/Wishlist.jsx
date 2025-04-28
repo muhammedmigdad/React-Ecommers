@@ -1,94 +1,126 @@
-import React, { useState, useEffect, useContext } from 'react';
-import axiosInstance from '../compontents/services/axios'; // Your Axios instance
-import { ShopContext } from '../context/ShopContext';
-import ProductItem from '../compontents/ProductItem'; // Assuming you have this
+import React, { useContext, useState, useEffect } from "react";
+import { ShopContext } from "../context/ShopContext";
+import axiosInstance from "../compontents/services/axios";
+import ProductItem from "../compontents/ProductItem";
+import { motion } from "framer-motion";
 
 function Wishlist() {
-    const [wishlistItems, setWishlistItems] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const { authToken } = useContext(ShopContext); // Assuming you store the token in context
+  const { addToCart } = useContext(ShopContext);
+  const [wishlistItems, setWishlistItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchWishlist = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const response = await axiosInstance.get('/wishlist/', {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('authToken')}`, // Or however you store your token
-                    },
-                });
-                setWishlistItems(response.data);
-            } catch (err) {
-                console.error("Error fetching wishlist:", err);
-                setError("Failed to load wishlist.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchWishlist();
-    }, [authToken]); // Re-fetch if the auth token changes
-
-    const handleRemoveFromWishlist = async (productId) => {
-        try {
-            const response = await axiosInstance.post(`/toggle_wishlist/${productId}/`, {}, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('authToken')}`,
-                },
-            });
-            if (!response.data.in_wishlist) {
-                setWishlistItems(prevItems => prevItems.filter(item => item.id !== productId));
-                alert(response.data.message);
-            }
-        } catch (error) {
-            console.error("Error removing from wishlist:", error);
-            alert("Failed to remove from wishlist.");
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token || token === "undefined") {
+          throw new Error("Please log in to view your wishlist.");
         }
+        const response = await axiosInstance.get("/wishlist/");
+        if (!Array.isArray(response.data)) {
+          throw new Error("Invalid response format: Expected an array");
+        }
+        setWishlistItems(response.data);
+      } catch (err) {
+        console.error("Error fetching wishlist:", {
+          message: err.message,
+          code: err.code,
+          response: err.response?.data,
+        });
+        setError(err.message || "Failed to load wishlist. Please try again.");
+      } finally {
+        setLoading(false);
+      }
     };
+    fetchWishlist();
+  }, []);
 
-    if (loading) {
-        return <div>Loading your wishlist...</div>;
+  const handleRemoveFromWishlist = async (productId) => {
+    try {
+      const response = await axiosInstance.post(`/toggle_wishlist/${productId}/`);
+      if (!response.data.in_wishlist) {
+        setWishlistItems((prevItems) => prevItems.filter((item) => item.id !== productId));
+        alert(response.data.message || "Item removed from wishlist.");
+      }
+    } catch (error) {
+      console.error("Error removing from wishlist:", {
+        message: error.message,
+        code: error.code,
+        response: error.response?.data,
+      });
+      alert(error.response?.data?.message || "Failed to remove item from wishlist.");
     }
+  };
 
-    if (error) {
-        return <div>Error loading wishlist: {error}</div>;
-    }
-
+  if (loading) {
     return (
-        <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-semibold mb-6">Your Wishlist</h2>
-            {wishlistItems.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {wishlistItems.map(item => (
-                        <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                            <ProductItem
-                                name={item.name}
-                                id={item.id}
-                                price={item.sale_price || item.regular_price}
-                                image={item.mainimage}
-                                className="w-full h-48 object-cover"
-                            />
-                            <div className="p-4">
-                                <h3 className="text-lg font-semibold">{item.name}</h3>
-                                <p className="text-gray-600">${item.sale_price || item.regular_price}</p>
-                                <button
-                                    onClick={() => handleRemoveFromWishlist(item.id)}
-                                    className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                                >
-                                    Remove
-                                </button>
-                                {/* Optionally add an "Add to Cart" button here */}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <p>Your wishlist is empty.</p>
-            )}
-        </div>
+      <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-gray-500 text-base sm:text-lg">
+          Loading your wishlist...
+        </motion.p>
+      </div>
     );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-500 text-base sm:text-lg">
+          {error}
+        </motion.p>
+      </div>
+    );
+  }
+
+  return (
+    <section className="min-h-screen py-10 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+      <motion.h2
+        className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-8 text-center"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        Your Wishlist
+      </motion.h2>
+      {wishlistItems.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+          {wishlistItems.map((item, index) => (
+            <motion.div
+              key={item.id}
+              className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <ProductItem
+                name={item.name}
+                id={item.id}
+                price={item.sale_price || item.regular_price}
+                originalPrice={item.regular_price}
+                image={item.mainimage}
+                onAddToCart={() => addToCart(item.id)}
+                onToggleWishlist={() => handleRemoveFromWishlist(item.id)}
+                isWishlisted={true}
+                className="w-full h-48 sm:h-56 md:h-64 object-cover"
+              />
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        <motion.p
+          className="text-center text-gray-600 text-base sm:text-lg"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          Your wishlist is empty.
+        </motion.p>
+      )}
+    </section>
+  );
 }
 
 export default Wishlist;

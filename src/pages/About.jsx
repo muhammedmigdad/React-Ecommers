@@ -112,7 +112,7 @@ function About() {
         <h2 className="text-3xl font-bold mb-3">Ready to Explore?</h2>
         <p className="text-gray-400 mb-6">Browse the latest styles and find your vibe.</p>
         <a
-          href="/shop"
+          href="/Collection"
           className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-8 rounded-full transition-all"
         >
           Shop Now

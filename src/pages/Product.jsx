@@ -95,7 +95,7 @@ function Product() {
 
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`/product_details/${productId}/`);
+        const response = await axios.get(`product_details/${productId}/`);
         const data = response.data;
         setProductData(data);
 
