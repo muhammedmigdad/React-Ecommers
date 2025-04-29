@@ -8,11 +8,10 @@ const instance = axios.create({
   },
 });
 
-// Request interceptor for auth token
 instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("authToken");
-    if (token && token !== "undefined") {
+    if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -20,15 +19,12 @@ instance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor for 401 handling
 instance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem("authToken");
-      if (!window.location.pathname.includes("login")) {
-        window.location.href = "/login";
-      }
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }

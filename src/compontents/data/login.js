@@ -1,4 +1,3 @@
-// components/data/login.js
 import axios from '../services/axios.js';
 
 const LOGIN_ENDPOINT = 'login/';
