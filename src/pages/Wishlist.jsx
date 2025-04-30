@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
-import axiosInstance from "../compontents/services/axios";
 import ProductItem from "../compontents/ProductItem";
-import { motion } from "framer-motion";
+import Title from "../compontents/Title";
+import axiosInstance from "../compontents/services/axios";
+import { toast } from "react-toastify";
 
 const Wishlist = () => {
   const { addToCart } = useContext(ShopContext);
@@ -10,89 +11,66 @@ const Wishlist = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchWishlist = async () => {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem("authToken");
-        if (!token) throw new Error("Please log in to view your wishlist.");
-
-        const response = await axiosInstance.get("/wishlist/");
-        setWishlistItems(response.data);
-      } catch (err) {
-        setError(err.message || "Failed to load wishlist");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchWishlist();
-  }, []);
-
-  const handleRemoveFromWishlist = async (productId) => {
+  const fetchWishlist = async () => {
     try {
-      const response = await axiosInstance.post(`/toggle_wishlist/${productId}/`);
-      if (!response.data.in_wishlist) {
-        setWishlistItems((items) => items.filter((item) => item.id !== productId));
-        alert(response.data.message || "Item removed from wishlist");
-      }
+      const response = await axiosInstance.get("/wishlist/");
+      setWishlistItems(response.data);
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to remove from wishlist");
+      setError(err.response?.data?.error || "Failed to load wishlist");
+      toast.error(err.response?.data?.error || "Error loading wishlist");
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-gray-500">
-          Loading your wishlist...
-        </motion.p>
-      </div>
-    );
-  }
+  const toggleWishlist = async (productId) => {
+    try {
+      const response = await axiosInstance.post(`/toggle_wishlist/${productId}/`);
+      if (!response.data.in_wishlist) {
+        setWishlistItems(items => items.filter(item => item.id !== productId));
+        toast.success("Removed from wishlist");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to update wishlist");
+    }
+  };
 
-  if (error) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-500">
-          {error}
-        </motion.p>
-      </div>
-    );
-  }
+  useEffect(() => { fetchWishlist(); }, []);
+
+  if (loading) return (
+    <div className="min-h-screen py-20">
+      <Title text1="YOUR" text2="WISHLIST" />
+      <p className="text-center text-gray-500">Loading your wishlist...</p>
+    </div>
+  );
+
+  if (error) return (
+    <div className="min-h-screen py-20">
+      <Title text1="YOUR" text2="WISHLIST" />
+      <p className="text-center text-red-500">{error}</p>
+    </div>
+  );
 
   return (
-    <section className="min-h-screen py-10">
-      <motion.h2 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-3xl font-bold text-center mb-8">
-        Your Wishlist
-      </motion.h2>
-
+    <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8">
+      <Title text1="YOUR" text2="WISHLIST" />
+      
       {wishlistItems.length > 0 ? (
-        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {wishlistItems.map((item, index) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-white shadow rounded p-4"
-            >
-              <ProductItem
-                id={item.id}
-                name={item.name}
-                price={item.sale_price || item.regular_price}
-                originalPrice={item.regular_price}
-                image={item.mainimage}
-                onAddToCart={() => addToCart(item.id)}
-                onToggleWishlist={() => handleRemoveFromWishlist(item.id)}
-                isWishlisted={true}
-              />
-            </motion.div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
+          {wishlistItems.map((product) => (
+            <ProductItem
+              key={product.id}
+              product={product}
+              onAddToCart={() => addToCart(product.id)}
+              onToggleWishlist={() => toggleWishlist(product.id)}
+              isWishlisted={true}
+            />
           ))}
         </div>
       ) : (
-        <p className="text-center text-gray-600">Your wishlist is empty.</p>
+        <p className="text-center text-gray-500 mt-8">Your wishlist is empty</p>
       )}
-    </section>
+    </div>
   );
 };
 

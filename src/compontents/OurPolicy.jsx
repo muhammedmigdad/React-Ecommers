@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { assets } from '../assets/assets';
-import { motion } from 'framer-motion';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from "react";
+import { assets } from "../assets/assets";
+import { motion } from "framer-motion";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const models = [
   { name: "Ethereal Flow", image: assets.p_img19 },
@@ -17,101 +17,90 @@ function ModelShowcase() {
   const timeoutRef = useRef(null);
 
   useEffect(() => {
-    const resetTimeout = () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-
-    resetTimeout();
+    clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       setActiveIndex((prev) => (prev + 1) % models.length);
     }, 5000);
-
-    return () => resetTimeout();
+    return () => clearTimeout(timeoutRef.current);
   }, [activeIndex]);
 
-  const handlePrev = () => {
+  const prev = () => {
     setActiveIndex((prev) => (prev - 1 + models.length) % models.length);
     clearTimeout(timeoutRef.current);
   };
 
-  const handleNext = () => {
+  const next = () => {
     setActiveIndex((prev) => (prev + 1) % models.length);
     clearTimeout(timeoutRef.current);
   };
 
-  const getDisplayModels = () => {
-    const total = models.length;
-    const indices = [];
-    for (let i = -2; i <= 2; i++) {
-      indices.push((activeIndex + i + total) % total);
-    }
-    return indices;
-  };
-
-  const getCardStyle = (index) => {
-    if (index === activeIndex) {
-      return "scale-100 z-30 opacity-100";
-    }
-    return "scale-75 opacity-60 z-10";
-  };
-
   return (
-    <section className="bg-black text-white py-20 px-4 sm:px-8 md:px-16 overflow-hidden">
-      {/* Header */}
+    <section className="bg-black text-white py-12 px-4 sm:px-8 md:px-16">
       <motion.div
         className="text-center mb-10"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.7 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-4xl sm:text-5xl font-bold mb-4">Explore New Arrivals ✨</h2>
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
+          Explore New Arrivals ✨
+        </h2>
         <p className="text-gray-400 text-base max-w-2xl mx-auto">
-          Discover our latest collection showcased with a modern carousel.
+          Fresh styles every season, explore fashion reimagined.
         </p>
       </motion.div>
 
-      {/* Carousel */}
-      <div className="relative flex justify-center items-center max-w-7xl mx-auto">
-        {/* Left Button */}
+      <div className="relative flex items-center justify-center max-w-7xl mx-auto">
+        {/* Prev Button */}
         <button
-          onClick={handlePrev}
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 p-3 rounded-full z-40"
+          onClick={prev}
+          className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 p-3 rounded-full z-40"
         >
           <FaChevronLeft className="text-white text-xl" />
         </button>
 
-        {/* Cards */}
-        <div className="flex gap-4 items-center justify-center w-full overflow-hidden">
-          {getDisplayModels().map((modelIndex, idx) => {
-            const model = models[modelIndex];
-            const styleClass = getCardStyle(modelIndex);
+        {/* Carousel */}
+        <div className="flex gap-4 justify-center items-center overflow-hidden w-full px-4 sm:px-10">
+          {models.map((model, index) => {
+            const isActive = index === activeIndex;
+            const isAdjacent =
+              index === (activeIndex - 1 + models.length) % models.length ||
+              index === (activeIndex + 1) % models.length;
 
             return (
               <motion.div
                 key={model.name}
-                onClick={() => setActiveIndex(modelIndex)}
-                className={`w-40 md:w-52 lg:w-60 h-72 md:h-80 lg:h-96 rounded-xl overflow-hidden shadow-xl transition-all duration-500 ease-in-out transform cursor-pointer ${styleClass}`}
+                onClick={() => setActiveIndex(index)}
+                className={`relative rounded-xl overflow-hidden transition-all duration-500 shadow-xl cursor-pointer transform ${
+                  isActive
+                    ? "scale-100 opacity-100 z-30"
+                    : isAdjacent
+                    ? "scale-90 opacity-70 z-20"
+                    : "scale-75 opacity-40 z-10 hidden sm:block"
+                } ${
+                  isActive
+                    ? "w-48 sm:w-56 md:w-64 lg:w-72 xl:w-80 h-64 sm:h-72 md:h-80 lg:h-96"
+                    : "w-24 sm:w-32 md:w-40 lg:w-48 h-32 sm:h-40 md:h-48 lg:h-60"
+                }`}
               >
                 <img
                   src={model.image}
                   alt={model.name}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-x-0 bottom-0 bg-black/60 backdrop-blur-md text-center py-2 px-2">
-                  <h3 className="text-white text-xs md:text-sm font-semibold tracking-wide">
-                    {model.name}
-                  </h3>
+                <div className="absolute bottom-0 w-full bg-black/60 text-center py-2 text-sm sm:text-base font-semibold">
+                  {model.name}
                 </div>
               </motion.div>
             );
           })}
         </div>
 
-        {/* Right Button */}
+        {/* Next Button */}
         <button
-          onClick={handleNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 p-3 rounded-full z-40"
+          onClick={next}
+          className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 p-3 rounded-full z-40"
         >
           <FaChevronRight className="text-white text-xl" />
         </button>
@@ -123,7 +112,7 @@ function ModelShowcase() {
           <button
             key={index}
             onClick={() => setActiveIndex(index)}
-            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
               index === activeIndex ? "bg-white scale-125" : "bg-gray-500"
             }`}
           />
